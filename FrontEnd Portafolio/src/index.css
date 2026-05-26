@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ─────────────────────────────────────────── */
+@layer base {
+    body {
+        margin: 0;
+        background: #0A0A0F;
+        font-family: 'Inter', system-ui, sans-serif;
+        font-weight: 400;
+        color: #F0F4FF;
+    }
+
+    /* Peso único: 400 y 500 — ningún otro */
+    strong,
+    b,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-weight: 500;
+    }
+
+    ::selection {
+        background: rgba(59, 130, 246, 0.3);
+        color: #F0F4FF;
+    }
+}
+
+/* ─── Components ────────────────────────────────────── */
+@layer components {
+
+    /* Fondo de rejilla sutil */
+    .bg-grid {
+        background-image:
+            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+
+    /* Borde fino con acento azul */
+    .border-subtle {
+        border-width: 0.5px;
+        border-color: rgba(59, 130, 246, 0.15);
+    }
+
+    /* Contenedor para efecto tilt 3-D */
+    .tilt-card {
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease;
+    }
+
+    /* Ocultar scrollbar manteniendo funcionalidad */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+/* ─── Utilities ─────────────────────────────────────── */
+@layer utilities {
+
+    /* Cursor parpadeante al final del texto de la máquina de escribir */
+    .typing-cursor::after {
+        content: '|';
+        animation: blink 1s step-end infinite;
+        color: #60A5FA;
+        font-weight: 400;
+    }
+}
+
+/* ─── Keyframes globales ────────────────────────────── */
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ─── Google AI Blobs ───────────────────────────────── */
+@layer components {
+    .google-blob {
+        position: absolute;
+        filter: blur(30px);
+        z-index: -1;
+        opacity: 0.7;
+        animation: morph 8s ease-in-out infinite both alternate;
+    }
+}
+
+@keyframes morph {
+    0% {
+        border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+        transform: scale(1) translate(0, 0) rotate(0deg);
+    }
+    33% {
+        border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+        transform: scale(1.1) translate(10px, -10px) rotate(10deg);
+    }
+    66% {
+        border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+        transform: scale(0.9) translate(-10px, 10px) rotate(-10deg);
+    }
+    100% {
+        border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+        transform: scale(1) translate(0, 0) rotate(0deg);
+    }
+}
