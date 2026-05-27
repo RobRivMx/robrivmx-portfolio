@@ -77,59 +77,44 @@ const documentos = [
   },
 ];
 
-const chatMessagesMock = [
-  {
-    role: 'user',
-    text: '¿Cuántos días de vacaciones tengo derecho según la política de la empresa?',
-  },
-  {
-    role: 'ai',
+const initialMessage = {
+  role: 'ai',
+  text: 'DocBrain Core Engine v2.4 inicializado. He procesado e indexado el 100% de tu repositorio documental corporativo.\n\nExperimenta el poder de la búsqueda semántica ejecutando alguna de las **acciones rápidas** a continuación, o formula un query complejo en lenguaje natural.\n\nGeneraré respuestas determinísticas extrayendo insights accionables y adjuntando la cita exacta de la fuente original.',
+};
+
+const formatTextWithBold = (text) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="text-white font-medium">{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
+
+const prebuiltResponses = {
+  'Días de vacaciones': {
     text: 'Según el Manual de RR.HH. 2026, los empleados tienen derecho a los siguientes días de vacaciones según su antigüedad:',
     lista: ['1 año: 12 días', '2 años: 14 días', '3 años: 16 días', '4 años: 18 días', '5-9 años: 20 días', '10+ años: 22 días'],
-    cita: {
-      documento: 'Manual de RR.HH. 2026',
-      seccion: 'Capítulo 4 · Página 23',
-      fragmento: '"El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días."',
-      pagina: 23,
-    },
+    cita: { documento: 'Manual de RR.HH. 2026', seccion: 'Capítulo 4 · Página 23', fragmento: '"El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días."', pagina: 23 },
   },
-  {
-    role: 'user',
-    text: '¿Cuál es la cláusula de confidencialidad en el contrato?',
+  'Proceso de onboarding': {
+    text: 'El proceso de onboarding para nuevos empleados consta de 3 fases principales durante el primer mes:',
+    lista: ['Día 1: Bienvenida, entrega de equipo y accesos.', 'Semana 1: Entrenamientos de cultura y herramientas.', 'Mes 1: Proyecto semilla y evaluación 360.'],
+    cita: { documento: 'Protocolo de Onboarding', seccion: 'Fases · Página 5', fragmento: '"El éxito del nuevo talento depende del primer mes. Las tres fases (Día 1, Semana 1, Mes 1) garantizan una inmersión total en la cultura corporativa."', pagina: 5 },
   },
-  {
-    role: 'ai',
-    text: 'La cláusula de confidencialidad establece que toda la información intercambiada entre las partes durante la vigencia del contrato tendrá carácter confidencial.',
-    cita: {
-      documento: 'Contrato Marco de Servicios',
-      seccion: 'Sección 7.2 · Página 18',
-      fragmento: '"La información intercambiada entre las partes tendrá carácter confidencial y no podrá ser divulgada a terceros sin autorización previa, manteniéndose esta obligación incluso después de la terminación del contrato."',
-      pagina: 18,
-    },
+  'Políticas IT': {
+    text: 'Las políticas de seguridad IT establecen lineamientos estrictos para el uso de equipos corporativos:',
+    lista: ['Prohibido instalar software no aprobado.', 'Bloqueo automático de pantalla tras 5 minutos.', 'Obligatorio el uso de VPN en redes públicas.'],
+    cita: { documento: 'Política de Seguridad IT', seccion: 'Dispositivos · Página 12', fragmento: '"Todo dispositivo asignado debe cumplir con la normativa de seguridad estándar: bloqueo automático (5 min), VPN activa fuera de la oficina y restricción de software de terceros."', pagina: 12 },
   },
-  {
-    role: 'user',
-    text: '¿Qué productos nuevos hay en el catálogo Q1 2026?',
-  },
-  {
-    role: 'ai',
+  'Productos disponibles': {
     text: 'Los productos nuevos incorporados en el catálogo Q1 2026 son:',
     lista: ['Teclado mecánico RGB v2', 'Monitor curvo 34" 5K', 'Hub USB-C multipuerto'],
-    cita: {
-      documento: 'Catálogo de Productos Q1 2026',
-      seccion: 'Sección 3 · Página 12',
-      fragmento: '"La nueva línea de periféricos incluye el teclado mecánico RGB v2 con switches mejorados, el monitor curvo 34 pulgadas con resolución 5K y el hub USB-C con 7 puertos."',
-      pagina: 12,
-    },
-  },
-];
-
-const historialConversaciones = [
-  { pregunta: '¿Cuántos días de vacaciones?', fecha: 'Hoy' },
-  { pregunta: 'Cláusula de confidencialidad', fecha: 'Ayer' },
-  { pregunta: 'Proceso de onboarding nuevo empleado', fecha: 'Hace 2 días' },
-  { pregunta: 'Productos disponibles en Q1', fecha: 'Hace 3 días' },
-];
+    cita: { documento: 'Catálogo de Productos Q1 2026', seccion: 'Sección 3 · Página 12', fragmento: '"La nueva línea de periféricos incluye el teclado mecánico RGB v2 con switches mejorados, el monitor curvo 34 pulgadas con resolución 5K y el hub USB-C con 7 puertos."', pagina: 12 },
+  }
+};
 
 const estadisticasConsultas = [
   { dia: 'Lun', consultas: 45 }, { dia: 'Mar', consultas: 62 }, { dia: 'Mié', consultas: 38 },
@@ -243,85 +228,179 @@ function DocumentCard({ doc }) {
 /** Zona de upload drag & drop */
 function UploadZone() {
   const [hover, setHover] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showModal]);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setShowModal(true);
+  };
+
   return (
-    <div
-      className={`rounded-xl p-6 sm:p-8 text-center transition-all duration-300 cursor-pointer bg-surface border-2 border-dashed ${hover ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]' : 'border-subtle'}`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className="text-4xl mb-3">📂</div>
-      <h3 className="text-lg sm:text-xl font-medium mb-2 text-text">
-        Suelta aquí tus PDF, Word o TXT
-      </h3>
-      <p className="text-sm mb-4 text-muted">
-        o haz clic para seleccionar archivos
-      </p>
-      <div className="flex flex-wrap justify-center gap-2 mb-5">
-        {['PDF', 'DOCX', 'TXT', 'MD', 'XLSX'].map((fmt) => (
-          <span key={fmt} className="text-xs font-medium rounded-full px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            {fmt}
-          </span>
-        ))}
-      </div>
-      <button
-        className="text-sm font-medium rounded-lg px-5 py-2.5 transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600"
-        onClick={(e) => e.stopPropagation()}
+    <>
+      <div
+        className={`rounded-xl p-6 sm:p-8 text-center transition-all duration-300 cursor-pointer bg-surface border-2 border-dashed ${hover ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.1)]' : 'border-subtle'}`}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={handleClick}
+        onDragOver={(e) => { e.preventDefault(); setHover(true); }}
+        onDragLeave={() => setHover(false)}
+        onDrop={(e) => { e.preventDefault(); setHover(false); handleClick(e); }}
       >
-        Seleccionar archivos
-      </button>
-    </div>
+        <div className="text-4xl mb-3">📂</div>
+        <h3 className="text-lg sm:text-xl font-medium mb-2 text-text">
+          Suelta aquí tus PDF, Word o TXT
+        </h3>
+        <p className="text-sm mb-4 text-muted">
+          o haz clic para seleccionar archivos
+        </p>
+        <div className="flex flex-wrap justify-center gap-2 mb-5">
+          {['PDF', 'DOCX', 'TXT', 'MD', 'XLSX'].map((fmt) => (
+            <span key={fmt} className="text-xs font-medium rounded-full px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {fmt}
+            </span>
+          ))}
+        </div>
+        <button
+          className="text-sm font-medium rounded-lg px-5 py-2.5 transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600"
+          onClick={handleClick}
+        >
+          Seleccionar archivos
+        </button>
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowModal(false)}>
+          <div className="bg-surface border border-subtle rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="absolute top-4 right-4 text-muted hover:text-text transition-colors"
+              onClick={() => setShowModal(false)}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-5">
+              <span className="text-2xl">🧠</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-medium text-text mb-3">Carga de Documentos (Demo)</h3>
+            <p className="text-sm text-muted mb-5 leading-relaxed">
+              En un entorno real de producción, al subir un documento, DocBrain ejecuta automáticamente el siguiente pipeline de IA en segundos:
+            </p>
+            <ol className="text-sm text-muted mb-7 space-y-4">
+              <li className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">1</span>
+                <div>
+                  <strong className="text-text block mb-0.5">Extracción y OCR</strong>
+                  <span>Lee el texto de PDFs, documentos Word o escaneos estructurando la información.</span>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">2</span>
+                <div>
+                  <strong className="text-text block mb-0.5">Chunking Semántico</strong>
+                  <span>Divide el documento inteligentemente conservando el contexto de cada párrafo.</span>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">3</span>
+                <div>
+                  <strong className="text-text block mb-0.5">Generación de Embeddings</strong>
+                  <span>Convierte los textos en vectores matemáticos usando modelos de IA avanzados.</span>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">4</span>
+                <div>
+                  <strong className="text-text block mb-0.5">Indexación Vectorial</strong>
+                  <span>Almacena los vectores en una base de datos especializada (ej. pgvector) para búsquedas instantáneas.</span>
+                </div>
+              </li>
+            </ol>
+            <div className="flex justify-end">
+              <button 
+                onClick={() => setShowModal(false)}
+                className="text-sm font-medium rounded-lg px-6 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
-/** Vista previa de documento inline */
+/** Vista previa de documento modal premium */
 function DocViewer({ documento, pagina, onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   return (
-    <div
-      className="rounded-xl p-4 sm:p-5 mb-6 bg-white/5 backdrop-blur-xl border border-subtle animate-fade-in-up"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-medium text-text">{documento} — Vista previa</h3>
-          <div className="flex items-center gap-2 text-sm mt-1 text-muted">
-            <span>Capítulo 4</span>
-            <span>›</span>
-            <span>Beneficios</span>
-            <span>›</span>
-            <span>Vacaciones</span>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
+      <div
+        className="w-full max-w-4xl bg-[#0F111A] border border-subtle rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-white/5 backdrop-blur-xl p-5 border-b border-subtle flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-medium text-text">{documento} — Vista previa</h3>
+            <div className="flex items-center gap-2 text-sm mt-1 text-muted">
+              <span>Capítulo 4</span>
+              <span>›</span>
+              <span>Beneficios</span>
+              <span>›</span>
+              <span>Vacaciones</span>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-xs font-medium rounded-lg px-3 py-1.5 transition-colors bg-transparent text-muted border border-subtle hover:text-text hover:bg-white/10"
+          >
+            Cerrar vista previa
+          </button>
+        </div>
+        
+        <div className="p-6 sm:p-8 bg-black/20">
+          <div className="bg-[#13151E] rounded-xl p-6 border border-subtle shadow-inner mb-6">
+            <p className="text-sm sm:text-base leading-relaxed mb-4 text-text/90">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              {' '}
+              <mark className="bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded font-medium">
+                El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días.
+              </mark>
+              {' '}
+              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+            <p className="text-sm sm:text-base text-muted/80">
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex gap-3">
+              <button className="text-sm font-medium rounded-lg px-4 py-2 bg-white/5 text-text border border-subtle hover:bg-white/10 transition-colors flex items-center gap-2">
+                <span>←</span> Anterior
+              </button>
+              <button className="text-sm font-medium rounded-lg px-4 py-2 bg-white/5 text-text border border-subtle hover:bg-white/10 transition-colors flex items-center gap-2">
+                Siguiente <span>→</span>
+              </button>
+            </div>
+            <span className="text-sm font-medium text-muted bg-white/5 px-3 py-1.5 rounded-lg border border-subtle">
+              Página {pagina} de 128
+            </span>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="text-xs font-medium rounded-lg px-3 py-1.5 transition-colors bg-transparent text-muted border border-subtle hover:text-text hover:bg-white/10"
-        >
-          Cerrar vista previa
-        </button>
-      </div>
-      <div className="bg-black/20 rounded-lg p-4 sm:p-5 border border-subtle mb-3">
-        <p className="text-sm leading-relaxed mb-4 text-text/80">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          {' '}
-          <mark className="bg-amber-500/20 text-amber-500 px-1 rounded">
-            El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días.
-          </mark>
-          {' '}
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        </p>
-        <p className="text-sm text-muted">
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          <button className="text-xs font-medium rounded-lg px-3 py-1.5 bg-surface text-muted border border-subtle hover:bg-white/10 hover:text-text transition-colors">
-            ← Página anterior
-          </button>
-          <button className="text-xs font-medium rounded-lg px-3 py-1.5 bg-surface text-muted border border-subtle hover:bg-white/10 hover:text-text transition-colors">
-            Siguiente →
-          </button>
-        </div>
-        <span className="text-xs text-muted">Página {pagina} de 128</span>
       </div>
     </div>
   );
@@ -377,7 +456,8 @@ function LoadingDots() {
    ============================================================ */
 export default function DocBrainDemo({ onClose }) {
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState(chatMessagesMock);
+  const [chatMessages, setChatMessages] = useState([initialMessage]);
+  const [history, setHistory] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showDocViewer, setShowDocViewer] = useState(null); // { documento, pagina }
   const [filtroDocumento, setFiltroDocumento] = useState('todos');
@@ -411,36 +491,36 @@ export default function DocBrainDemo({ onClose }) {
   const countPrecision = useCountUp(94, 2000, metricsInView);
 
   // Manejar envío de chat
-  const handleSendMessage = () => {
-    const trimmed = chatInput.trim();
+  const handleSendMessage = (textOverride) => {
+    const textToUse = typeof textOverride === 'string' ? textOverride : chatInput;
+    const trimmed = textToUse.trim();
     if (!trimmed || isAiLoading) return;
+    
     setChatMessages(prev => [...prev, { role: 'user', text: trimmed }]);
+    setHistory(prev => [{ pregunta: trimmed, fecha: 'Justo ahora' }, ...prev]);
     setChatInput('');
     setIsAiLoading(true);
+    
     setTimeout(() => {
-      setChatMessages(prev => [
-        ...prev,
-        {
-          role: 'ai',
-          text: 'Según los documentos disponibles, he encontrado información relevante para tu consulta.',
-          cita: {
-            documento: 'Manual de RR.HH. 2026',
-            seccion: 'Capítulo 4 · Página 23',
-            fragmento: '"El período vacacional se determina conforme a la Ley Federal del Trabajo..."',
-            pagina: 23,
-          },
-        },
-      ]);
+      let aiResponse = prebuiltResponses[trimmed];
+      
+      if (!aiResponse) {
+         aiResponse = {
+           role: 'ai',
+           text: '¡Excelente pregunta! Como esta es una demostración, tus documentos reales aún no están conectados. En un entorno de producción con tu propia cuenta, DocBrain buscaría semánticamente en toda tu base de datos y te daría la respuesta exacta citando la página de referencia.'
+         };
+      } else {
+         aiResponse = { role: 'ai', ...aiResponse };
+      }
+
+      setChatMessages(prev => [...prev, aiResponse]);
       setIsAiLoading(false);
-    }, 2000);
+    }, 1500);
   };
 
   // Mostrar vista previa de documento
   const handleVerPagina = (documento, pagina) => {
     setShowDocViewer({ documento, pagina });
-    setTimeout(() => {
-      document.getElementById('docviewer-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
   };
 
   return (
@@ -622,7 +702,7 @@ export default function DocBrainDemo({ onClose }) {
               <div className="hidden lg:flex lg:flex-col w-full lg:w-64 lg:min-w-[256px] p-4 gap-4 bg-surface/50 border-r border-subtle overflow-y-auto custom-scrollbar">
                 <button
                   className="text-sm font-medium rounded-lg py-2.5 px-4 bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                  onClick={() => setChatMessages(chatMessagesMock)}
+                  onClick={() => setChatMessages([initialMessage])}
                 >
                   + Nueva consulta
                 </button>
@@ -634,10 +714,13 @@ export default function DocBrainDemo({ onClose }) {
                       <button
                         key={filtro}
                         onClick={() => setFiltroDocumento(filtro)}
-                        className={`text-left text-xs sm:text-sm rounded-lg px-3 py-2 transition-colors ${filtroDocumento === filtro ? 'bg-white/10 text-blue-400' : 'text-muted hover:text-text hover:bg-white/5'
+                        className={`text-left text-xs sm:text-sm rounded-lg px-3 py-2 transition-colors flex items-center gap-2.5 ${filtroDocumento === filtro ? 'bg-blue-500/10 text-blue-400' : 'text-muted hover:text-text hover:bg-white/5'
                           }`}
                       >
-                        {filtro}
+                        <div className={`w-3.5 h-3.5 flex-shrink-0 rounded-sm flex items-center justify-center transition-colors ${filtroDocumento === filtro ? 'bg-blue-500' : 'bg-black/20 border border-white/20'}`}>
+                          {filtroDocumento === filtro && <svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                        </div>
+                        <span className="truncate">{filtro}</span>
                       </button>
                     ))}
                   </div>
@@ -646,12 +729,16 @@ export default function DocBrainDemo({ onClose }) {
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">Historial</span>
                   <div className="flex flex-col gap-1">
-                    {historialConversaciones.map((item, idx) => (
-                      <div key={idx} className="rounded-lg px-3 py-2 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span className="text-xs sm:text-sm block text-text">{item.pregunta}</span>
-                        <span className="text-[10px] text-muted">{item.fecha}</span>
-                      </div>
-                    ))}
+                    {history.length === 0 ? (
+                      <span className="text-xs text-muted/60 px-2">Aún no hay consultas</span>
+                    ) : (
+                      history.map((item, idx) => (
+                        <div key={idx} className="rounded-lg px-3 py-2 cursor-pointer hover:bg-white/5 transition-colors">
+                          <span className="text-xs sm:text-sm block text-text truncate">{item.pregunta}</span>
+                          <span className="text-[10px] text-muted">{item.fecha}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
@@ -662,12 +749,12 @@ export default function DocBrainDemo({ onClose }) {
                   {chatMessages.map((msg, idx) => (
                     <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                       {msg.role === 'user' ? (
-                        <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-br-md px-4 py-3 text-sm sm:text-base bg-blue-500 text-white shadow-md">
-                          {msg.text}
+                        <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-br-md px-4 py-3 text-sm sm:text-base bg-blue-500 text-white shadow-md leading-relaxed whitespace-pre-wrap">
+                          {formatTextWithBold(msg.text)}
                         </div>
                       ) : (
                         <div className="max-w-[95%] sm:max-w-[85%]">
-                          {msg.text && <p className="text-sm sm:text-base mb-2 text-text">{msg.text}</p>}
+                          {msg.text && <p className="text-sm sm:text-base mb-2 text-text leading-relaxed whitespace-pre-wrap">{formatTextWithBold(msg.text)}</p>}
                           {msg.lista && (
                             <ul className="list-disc pl-5 mb-3 space-y-1">
                               {msg.lista.map((item, i) => (
@@ -705,11 +792,12 @@ export default function DocBrainDemo({ onClose }) {
 
                 {/* Input bar */}
                 <div className="p-4 sm:p-5 border-t border-subtle bg-surface/50">
+                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">Acciones rápidas sugeridas</span>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {['Días de vacaciones', 'Proceso de onboarding', 'Políticas IT', 'Productos disponibles'].map((chip) => (
                       <button
                         key={chip}
-                        onClick={() => setChatInput(chip)}
+                        onClick={() => handleSendMessage(chip)}
                         className="text-xs font-medium rounded-full px-3 py-1.5 transition-colors bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20"
                       >
                         {chip}
@@ -748,13 +836,11 @@ export default function DocBrainDemo({ onClose }) {
 
           {/* ===== SECCIÓN 5: VISTA PREVIA DE DOCUMENTO ===== */}
           {showDocViewer && (
-            <section id="docviewer-section" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
-              <DocViewer
-                documento={showDocViewer.documento}
-                pagina={showDocViewer.pagina}
-                onClose={() => setShowDocViewer(null)}
-              />
-            </section>
+            <DocViewer
+              documento={showDocViewer.documento}
+              pagina={showDocViewer.pagina}
+              onClose={() => setShowDocViewer(null)}
+            />
           )}
 
           {/* ===== SECCIÓN 6: ESTADÍSTICAS DE USO ===== */}
