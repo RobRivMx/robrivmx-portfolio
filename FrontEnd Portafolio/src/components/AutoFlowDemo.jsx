@@ -858,17 +858,17 @@ export default function AutoFlowDemo({ onClose }) {
                 </section>
 
                 {/* ========== FOOTER ========== */}
-                <footer className="border-t border-[rgba(59,130,246,0.12)] py-8 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                        <Icons.Logo />
-                        <span className="text-sm font-medium text-[#F0F4FF]">AutoFlow</span>
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-[#60A5FA]/10 text-[#60A5FA] border border-[#60A5FA]/20">
-                            Demo
-                        </span>
+                <footer className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-8 border-t border-[rgba(59,130,246,0.12)] mt-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <Icons.Logo />
+                            <span className="text-lg font-medium text-[#F0F4FF]">Auto<span className="font-normal text-[#60A5FA]">Flow</span></span>
+                            <span className="text-[10px] sm:text-xs rounded-full px-2 py-0.5 ml-2 bg-[#60A5FA]/10 text-[#60A5FA] border border-[#60A5FA]/20">DEMO</span>
+                        </div>
+                        <p className="text-xs text-[#8B95B0]">
+                            Automatización empresarial con n8n · IA · Webhooks
+                        </p>
                     </div>
-                    <p className="text-[11px] font-normal text-[#8B95B0]">
-                        Automatización empresarial con n8n + IA integrada · Prototipo demostrativo
-                    </p>
                 </footer>
             </div>
 

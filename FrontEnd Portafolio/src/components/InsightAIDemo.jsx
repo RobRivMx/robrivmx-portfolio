@@ -975,6 +975,20 @@ export default function InsightAIDemo({ onClose }) {
           )}
 
         </main>
+
+        {/* ===== FOOTER ===== */}
+        <footer className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-8 border-t border-subtle mt-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="21" /><line x1="15" y1="3" x2="15" y2="21" /></svg>
+              <span className="text-lg font-medium text-text">Insight<span className="font-normal text-blue-400">AI</span></span>
+              <span className="text-[10px] sm:text-xs rounded-full px-2 py-0.5 ml-2 bg-blue-500/10 text-blue-400 border border-blue-500/20">DEMO</span>
+            </div>
+            <p className="text-xs text-muted">
+              Análisis Predictivo · Business Intelligence · NLP
+            </p>
+          </div>
+        </footer>
       </div>
     </>
   );

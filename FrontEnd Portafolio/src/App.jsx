@@ -231,7 +231,7 @@ export default function App() {
           {/* Logo */}
           <a href="#" onClick={(e) => scrollTo(e, 'hero')} className="flex items-center gap-2.5 group">
             <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)] group-hover:shadow-[0_0_18px_rgba(59,130,246,0.9)] transition-shadow duration-300" />
-            <span className="text-sm font-medium tracking-tight">Roberto Rivera</span>
+            <span className="text-sm font-medium tracking-tight">Roberto <span className="font-normal text-blue-400">Rivera</span></span>
           </a>
 
           {/* Desktop nav */}
@@ -504,8 +504,16 @@ export default function App() {
           </div>
         </section >
 
-        <footer className="border-t border-subtle py-8 text-center">
-          <p className="text-xs font-normal text-muted">© 2026 Roberto Rivera — Diseñado con precisión.</p>
+        <footer className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-8 border-t border-subtle mt-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
+              <span className="text-lg font-medium tracking-tight">Roberto <span className="font-normal text-blue-400">Rivera</span></span>
+            </div>
+            <p className="text-xs font-normal text-muted">
+              © 2026 Roberto Rivera — Diseñado con precisión.
+            </p>
+          </div>
         </footer>
       </main >
 

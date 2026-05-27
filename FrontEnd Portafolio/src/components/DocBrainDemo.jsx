@@ -406,32 +406,33 @@ function DocViewer({ documento, pagina, onClose }) {
   );
 }
 
-/** Toggle switch */
+/** Toggle switch premium */
 function Toggle({ label, checked, onChange }) {
   return (
-    <label className="flex items-center gap-3 cursor-pointer">
-      <span className="text-sm" style={{ color: '#F0F4FF' }}>{label}</span>
+    <label className="flex items-center justify-between gap-3 cursor-pointer group w-full">
+      <span className="text-sm text-text group-hover:text-white transition-colors">{label}</span>
       <div
-        className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${checked ? 'bg-blue-500' : 'bg-gray-700'}`}
+        className={`relative w-11 h-6 flex-shrink-0 rounded-full transition-all duration-300 ${checked ? 'bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)]' : 'bg-black/40 border border-subtle'}`}
         onClick={() => onChange(!checked)}
       >
         <div
-          className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 ${checked ? 'translate-x-4' : ''
-            }`}
+          className={`absolute top-[2px] left-[2px] w-5 h-5 rounded-full bg-white transition-transform duration-300 ${checked ? 'translate-x-5' : 'translate-x-0'}`}
         />
       </div>
     </label>
   );
 }
 
-/** Barra de progreso simple */
+/** Barra de progreso interactiva */
 function ProgressBar({ value, max = 100, color = '#3B82F6' }) {
   return (
-    <div className="w-full bg-gray-800 rounded-full h-2">
+    <div className="w-full bg-black/40 rounded-full h-2 overflow-hidden border border-subtle">
       <div
-        className="h-full rounded-full transition-all duration-500"
-        style={{ width: `${(value / max) * 100}%`, background: color }}
-      />
+        className="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
+        style={{ width: `${(value / max) * 100}%`, background: color, boxShadow: `0 0 10px ${color}50` }}
+      >
+        <div className="absolute top-0 bottom-0 left-0 w-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" style={{ transform: 'translateX(-100%)' }} />
+      </div>
     </div>
   );
 }
@@ -466,7 +467,17 @@ export default function DocBrainDemo({ onClose }) {
   const [umbralConfianza, setUmbralConfianza] = useState(85);
   const [citarFuente, setCitarFuente] = useState(true);
   const [soloDocumentos, setSoloDocumentos] = useState(true);
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const chatContainerRef = useRef(null);
+
+  // Bloquear scroll para modal demo
+  useEffect(() => {
+    if (showDemoModal) {
+      document.body.style.overflow = 'hidden';
+    } else if (!showDocViewer) {
+      document.body.style.overflow = 'unset';
+    }
+  }, [showDemoModal, showDocViewer]);
 
   // Scroll al inicio al abrir el componente
   useEffect(() => {
@@ -530,6 +541,12 @@ export default function DocBrainDemo({ onClose }) {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+        .animate-shimmer {
+          animation: shimmer 2.5s infinite linear;
+        }
         .loading-dot {
           animation: bounceDot 1.2s ease-in-out infinite;
         }
@@ -547,7 +564,7 @@ export default function DocBrainDemo({ onClose }) {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
       `}</style>
 
-      <div className="min-h-screen font-sans bg-bg text-text relative">
+      <div className="min-h-screen font-sans bg-bg text-text relative overflow-x-hidden">
         <ParticleBackground />
         <div className="absolute inset-0 bg-grid z-0 opacity-50 pointer-events-none" />
         <div className="relative z-10">
@@ -582,8 +599,8 @@ export default function DocBrainDemo({ onClose }) {
           </header>
 
           {/* ========== HERO SECTION ========== */}
-          <section id="hero" className="relative min-h-[85vh] flex flex-col items-center justify-center px-4 text-center overflow-hidden z-10">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <section id="hero" className="relative min-h-[85vh] flex flex-col items-center justify-center px-4 text-center z-10">
+            <div className="absolute inset-0 pointer-events-none">
               {[200, 220, 260].map((hue, i) => (
                 <div
                   key={i}
@@ -650,13 +667,13 @@ export default function DocBrainDemo({ onClose }) {
               ].map((metric, idx) => (
                 <div
                   key={idx}
-                  className="rounded-xl p-4 sm:p-5 flex flex-col gap-1.5 bg-white/5 backdrop-blur-xl border border-subtle"
+                  className="group rounded-xl p-4 sm:p-5 flex flex-col gap-1.5 bg-white/5 backdrop-blur-xl border border-subtle hover:bg-white/10 hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(59,130,246,0.1)] transition-all duration-300 cursor-pointer"
                 >
-                  <span className="text-2xl">{metric.icon}</span>
-                  <span className="text-2xl sm:text-3xl font-medium text-text">
+                  <span className="text-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 origin-bottom-left">{metric.icon}</span>
+                  <span className="text-2xl sm:text-3xl font-medium text-text group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-300 transition-all duration-300">
                     {metric.value.toLocaleString()}{metric.suffix}
                   </span>
-                  <span className="text-xs sm:text-sm text-muted">{metric.label}</span>
+                  <span className="text-xs sm:text-sm text-muted group-hover:text-blue-200/70 transition-colors">{metric.label}</span>
                 </div>
               ))}
             </div>
@@ -848,50 +865,61 @@ export default function DocBrainDemo({ onClose }) {
             <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text">Actividad de la Biblioteca</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Consultas esta semana */}
-              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-colors">
-                <h3 className="text-sm font-medium mb-3 text-muted">Consultas esta semana</h3>
+              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-all group">
+                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">Consultas esta semana</h3>
                 <div className="flex items-end gap-1.5 h-24">
                   {estadisticasConsultas.map((dia, idx) => (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                      <div
-                        className="w-full rounded-sm bg-blue-500/80 hover:bg-blue-400 transition-colors cursor-pointer"
-                        style={{ height: `${(dia.consultas / 100) * 100}%` }}
-                      />
-                      <span className="text-[10px] text-muted">{dia.dia}</span>
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1 justify-end h-full">
+                      <div className="w-full flex items-end justify-center group/bar relative h-full">
+                        <div className="absolute bottom-[calc(100%+5px)] bg-surface border border-subtle text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg whitespace-nowrap">
+                          {dia.consultas} consultas
+                        </div>
+                        <div
+                          className="w-full rounded-sm bg-blue-500/60 group-hover/bar:bg-blue-400 transition-all cursor-pointer relative overflow-hidden"
+                          style={{ height: `${(dia.consultas / 100) * 100}%` }}
+                        >
+                          <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/20" />
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-muted group-hover/bar:text-text transition-colors">{dia.dia}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Documentos más consultados */}
-              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-colors">
+              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-all">
                 <h3 className="text-sm font-medium mb-3 text-muted">Documentos más consultados</h3>
                 <div className="space-y-3">
                   {documentosMasConsultados.map((doc, idx) => (
-                    <div key={idx}>
+                    <div key={idx} className="group cursor-pointer">
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-text">{doc.nombre}</span>
+                        <span className="text-text group-hover:text-blue-300 transition-colors">{doc.nombre}</span>
                         <span className="text-blue-400 font-medium">{doc.porcentaje}%</span>
                       </div>
-                      <ProgressBar value={doc.porcentaje} max={100} />
+                      <ProgressBar value={doc.porcentaje} max={100} color={idx === 0 ? '#3B82F6' : '#60A5FA'} />
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Tiempo respuesta */}
-              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-colors">
-                <h3 className="text-sm font-medium mb-3 text-muted">Tiempo promedio de respuesta</h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-medium text-text">1.2s</span>
-                  <span className="text-sm text-green-400">↓ 0.3s vs semana anterior</span>
+              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-green-500/30 transition-all group cursor-pointer relative overflow-hidden">
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors" />
+                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">Tiempo promedio de respuesta</h3>
+                <div className="flex items-baseline gap-2 relative z-10">
+                  <span className="text-4xl font-medium text-text drop-shadow-[0_0_15px_rgba(74,222,128,0.2)]">1.2s</span>
+                  <span className="text-sm text-green-400 flex items-center gap-1">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    0.3s vs semana anterior
+                  </span>
                 </div>
-                <div className="mt-4 flex items-center gap-2">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="10" r="8" stroke="#60A5FA" strokeWidth="1.5" />
-                    <path d="M10 5v5l3 2" stroke="#60A5FA" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                  <span className="text-sm text-muted">Respuesta casi instantánea</span>
+                <div className="mt-4 flex items-center gap-2 relative z-10">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                  </span>
+                  <span className="text-sm text-muted group-hover:text-green-400 transition-colors">Estado del sistema óptimo</span>
                 </div>
               </div>
             </div>
@@ -899,41 +927,66 @@ export default function DocBrainDemo({ onClose }) {
 
           {/* ===== SECCIÓN 7: ADMINISTRACIÓN ===== */}
           <section id="admin" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
-            <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text">Administración</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text flex items-center gap-3">
+              Administración Avanzada
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+              </span>
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
+              {/* Decorative background glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-lg bg-blue-500/5 blur-[100px] pointer-events-none" />
+
               {/* Configuración RAG */}
-              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle">
-                <h3 className="text-lg font-medium mb-5 text-text">Configuración RAG</h3>
-                <div className="space-y-5">
+              <div className="rounded-2xl p-6 sm:p-8 bg-[#0F111A]/80 backdrop-blur-xl border border-subtle relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full transition-transform group-hover:scale-150" />
+                
+                <h3 className="text-xl font-medium mb-8 text-text flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                  Parámetros del Motor RAG
+                </h3>
+                
+                <div className="space-y-8 relative z-10">
+                  {/* Modo de Búsqueda (Pill Switch) */}
                   <div>
-                    <p className="text-sm mb-2 text-text">Modo de búsqueda</p>
-                    <div className="flex gap-2">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-text">Algoritmo de Recuperación</p>
+                      <span className="text-[10px] uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">Activo</span>
+                    </div>
+                    <div className="flex relative bg-black/40 p-1 rounded-xl border border-subtle">
+                      <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-blue-600 rounded-lg transition-transform duration-300 ease-out shadow-[0_0_15px_rgba(37,99,235,0.4)] ${modoBusqueda === 'semantica' ? 'translate-x-full left-1' : 'translate-x-0 left-1'}`} />
                       <button
                         onClick={() => setModoBusqueda('exacta')}
-                        className={`text-xs font-medium rounded-lg px-4 py-2 transition-colors border ${modoBusqueda === 'exacta' ? 'bg-blue-600 text-white border-blue-500' : 'bg-surface text-muted border-subtle hover:bg-white/10'
-                          }`}
+                        className={`flex-1 relative z-10 text-xs sm:text-sm font-medium py-2.5 transition-colors ${modoBusqueda === 'exacta' ? 'text-white' : 'text-muted hover:text-white'}`}
                       >
-                        Exacta
+                        Exacta (BM25)
                       </button>
                       <button
                         onClick={() => setModoBusqueda('semantica')}
-                        className={`text-xs font-medium rounded-lg px-4 py-2 transition-colors border ${modoBusqueda === 'semantica' ? 'bg-blue-600 text-white border-blue-500' : 'bg-surface text-muted border-subtle hover:bg-white/10'
-                          }`}
+                        className={`flex-1 relative z-10 text-xs sm:text-sm font-medium py-2.5 transition-colors ${modoBusqueda === 'semantica' ? 'text-white' : 'text-muted hover:text-white'}`}
                       >
-                        Semántica
+                        Semántica (Vectorial)
                       </button>
                     </div>
                   </div>
 
+                  {/* Fragmentos (Interactive Segments) */}
                   <div>
-                    <p className="text-sm mb-2 text-text">Número de fragmentos: {numFragmentos}</p>
-                    <div className="flex gap-2">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-text">Top-K Fragmentos (Chunks)</p>
+                      <span className="text-xs font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">{numFragmentos} docs</span>
+                    </div>
+                    <div className="flex gap-1.5 w-full">
                       {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                         <button
                           key={n}
                           onClick={() => setNumFragmentos(n)}
-                          className={`w-6 h-6 rounded-full text-xs font-medium transition-all border ${numFragmentos === n ? 'bg-blue-600 text-white scale-110 border-blue-500' : 'bg-surface text-muted border-subtle hover:bg-white/10'
-                            }`}
+                          className={`flex-1 h-8 rounded border transition-all duration-300 flex items-center justify-center text-xs font-mono
+                            ${numFragmentos >= n 
+                              ? 'bg-blue-600/90 border-blue-400 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' 
+                              : 'bg-surface border-subtle text-muted hover:border-white/20 hover:bg-white/5'}`}
                         >
                           {n}
                         </button>
@@ -941,47 +994,97 @@ export default function DocBrainDemo({ onClose }) {
                     </div>
                   </div>
 
+                  {/* Confianza (Glowing Slider) */}
                   <div>
-                    <p className="text-sm mb-2 text-text">Umbral de confianza: {umbralConfianza}%</p>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={umbralConfianza}
-                      onChange={(e) => setUmbralConfianza(e.target.value)}
-                      className="w-full h-1.5 rounded-full appearance-none bg-black/40"
-                      style={{ accentColor: '#3B82F6' }}
-                    />
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-text">Umbral de Similitud (Cosine)</p>
+                      <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{umbralConfianza}%</span>
+                    </div>
+                    <div className="relative pt-2 pb-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={umbralConfianza}
+                        onChange={(e) => setUmbralConfianza(e.target.value)}
+                        className="w-full h-2 rounded-full appearance-none bg-black/50 cursor-pointer relative z-10"
+                        style={{
+                          background: `linear-gradient(to right, #F59E0B ${(umbralConfianza)}%, rgba(0,0,0,0.5) ${(umbralConfianza)}%)`,
+                          accentColor: '#FBBF24'
+                        }}
+                      />
+                      {/* Slider Glow */}
+                      <div 
+                        className="absolute top-1/2 -translate-y-1/2 h-2 rounded-full bg-amber-500 blur-md opacity-40 transition-all pointer-events-none"
+                        style={{ width: `${umbralConfianza}%` }}
+                      />
+                    </div>
                   </div>
 
-                  <Toggle label="Citar siempre la fuente" checked={citarFuente} onChange={setCitarFuente} />
-                  <Toggle label="Responder solo con documentos" checked={soloDocumentos} onChange={setSoloDocumentos} />
+                  <div className="mt-8 bg-black/30 border border-subtle rounded-xl p-5 flex flex-col gap-4 relative z-10">
+                    <Toggle label="Forzar Citas de Origen (Footnotes)" checked={citarFuente} onChange={setCitarFuente} />
+                    <Toggle label="Modo Strict RAG (Evitar Alucinaciones)" checked={soloDocumentos} onChange={setSoloDocumentos} />
+                  </div>
                 </div>
               </div>
 
               {/* Seguridad y Acceso */}
-              <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle">
-                <h3 className="text-lg font-medium mb-5 text-text">Seguridad y Acceso</h3>
-                <div className="space-y-3">
+              <div className="rounded-2xl p-6 sm:p-8 bg-[#0F111A]/80 backdrop-blur-xl border border-subtle relative overflow-hidden group hover:border-blue-500/30 transition-colors flex flex-col">
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 blur-3xl rounded-full transition-transform group-hover:scale-150" />
+                
+                <h3 className="text-xl font-medium mb-6 text-text flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                  Control de Acceso y Roles
+                </h3>
+                
+                <div className="space-y-3 relative z-10 flex-1">
                   {usuariosAcceso.map((user, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-2 border-b border-subtle last:border-0">
-                      <div>
-                        <p className="text-sm font-medium text-text">{user.nombre}</p>
-                        <p className="text-xs text-muted">{user.acceso}</p>
+                    <div key={idx} className="group/user flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-white/10 hover:bg-white/5 transition-all cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm border shadow-inner ${
+                          user.rol === 'admin' 
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' 
+                            : 'bg-surface text-muted border-subtle'
+                        }`}>
+                          {user.nombre.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-text group-hover/user:text-white transition-colors">{user.nombre}</p>
+                          <p className="text-xs text-muted flex items-center gap-1">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            {user.acceso}
+                          </p>
+                        </div>
                       </div>
-                      <span className={`text-xs rounded-full px-2 py-0.5 border ${user.rol === 'admin'
-                        ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                        : 'bg-white/5 text-muted border-subtle'
+                      <span className={`text-[10px] uppercase tracking-wider rounded-full px-2.5 py-1 border transition-colors ${
+                        user.rol === 'admin'
+                          ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)] group-hover/user:bg-green-500/20'
+                          : 'bg-white/5 text-muted border-subtle group-hover/user:border-white/20'
                         }`}>
                         {user.rol}
                       </span>
                     </div>
                   ))}
                 </div>
-                <button className="mt-5 text-xs font-medium rounded-lg px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors">
-                  Gestionar permisos
-                </button>
-                <p className="text-xs mt-3 text-muted">Último acceso: hace 5 minutos</p>
+                
+                <div className="mt-8 bg-black/30 border border-subtle rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+                  <p className="text-xs font-medium text-muted flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                    </span>
+                    Conexión Segura Activa
+                  </p>
+                  <button 
+                    onClick={() => setShowDemoModal(true)}
+                    className="relative group/btn overflow-hidden text-xs font-medium rounded-lg px-6 py-2.5 bg-blue-600/10 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all shadow-[0_0_15px_rgba(37,99,235,0.15)]"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      Gestionar políticas
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover/btn:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -1004,6 +1107,27 @@ export default function DocBrainDemo({ onClose }) {
           </footer>
         </div>
       </div>
+
+      {/* ===== MODAL DEMO ===== */}
+      {showDemoModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={() => setShowDemoModal(false)}>
+          <div className="bg-[#0F111A] border border-subtle rounded-2xl max-w-sm w-full p-6 sm:p-8 shadow-2xl relative animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-5 border border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <h3 className="text-xl font-medium text-text mb-2">Función Restringida</h3>
+            <p className="text-sm text-muted mb-6 leading-relaxed">
+              Esta es una demostración interactiva de DocBrain. La gestión avanzada de políticas y roles de acceso requiere conexión a tu base de datos y Active Directory.
+            </p>
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="w-full text-sm font-medium rounded-lg px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)]"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
