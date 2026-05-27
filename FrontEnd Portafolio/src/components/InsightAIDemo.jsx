@@ -78,12 +78,7 @@ const transaccionesData = [
   { id: '#TX-1843', cliente: 'TechNova', producto: 'Mouse Ergo', monto: '$1,450', status: 'Completado', fecha: '2026-05-19' },
 ];
 
-const chatHistory = [
-  { pregunta: '¿Cuál fue el producto más vendido?', fecha: 'Hoy' },
-  { pregunta: 'Ventas por región Q1 2026', fecha: 'Ayer' },
-  { pregunta: 'Clientes con mayor churn risk', fecha: 'Hace 2 días' },
-  { pregunta: 'Comparar Q1 vs Q4 2025', fecha: 'Hace 3 días' },
-];
+
 
 const conectoresRelacionales = [
   { nombre: 'PostgreSQL', desc: 'Base de datos relacional open source', conectado: true, icono: '🐘' },
@@ -376,24 +371,32 @@ export default function InsightAIDemo({ onClose }) {
   }, []);
 
   const [chatMessages, setChatMessages] = useState([
-    { role: 'user', text: '¿Cuál fue mi producto más vendido esta semana?' },
     {
       role: 'ai',
-      text: 'El producto más vendido esta semana fue **Laptop Pro X1** con 47 unidades vendidas (+23% vs semana anterior).',
-      analysis: 'Analizando tu base de datos de ventas... Detecté un incremento significativo en la categoría de laptops premium, impulsado por la campaña de descuentos corporativos activa desde el lunes.',
-      showMiniChart: true,
-    },
-    { role: 'user', text: '¿Qué clientes tienen mayor probabilidad de no renovar?' },
-    {
-      role: 'ai',
-      text: 'Detecté 3 clientes con alto riesgo de churn basado en su patrón de compras decreciente y tickets de soporte abiertos.',
-      analysis: 'CorpTech SA (score: 87/100), InnovaMex (score: 72/100) y DataFlow (score: 68/100) muestran señales de posible no renovación.',
-      showClientTable: true,
-    },
+      text: '¡Hola! Soy InsightAI, tu CFO virtual. Para que veas la magia en acción, te invito a probar los botones de **acciones rápidas** abajo, o puedes escribir tu propia consulta.\n\nDescubre cómo genero gráficos y tablas dinámicas en segundos basándome en tus datos.',
+      analysis: 'Conexión a PostgreSQL establecida con éxito. Listo para procesar consultas.',
+      showMiniChart: false,
+      showClientTable: false,
+    }
   ]);
+  const [history, setHistory] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showExpandedInsight, setShowExpandedInsight] = useState(false);
+  
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncText, setLastSyncText] = useState('Sincronizado hace 5 min');
+  const [showSchema, setShowSchema] = useState(false);
+
+  const handleResync = () => {
+    setIsSyncing(true);
+    setLastSyncText('Sincronizando metadata...');
+    setTimeout(() => {
+      setIsSyncing(false);
+      setLastSyncText('Sincronizado justo ahora');
+    }, 1500);
+  };
+
   const chatEndRef = useRef(null);
   const insightRef = useRef(null);
   const prevChatLength = useRef(4); // Inicial con 4 mensajes
@@ -406,7 +409,13 @@ export default function InsightAIDemo({ onClose }) {
       (isAiLoading && !prevLoading.current)
     ) {
       if (chatEndRef.current) {
-        chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        const parent = chatEndRef.current.parentElement;
+        if (parent) {
+          parent.scrollTo({
+            top: parent.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
       }
     }
     prevChatLength.current = chatMessages.length;
@@ -421,14 +430,15 @@ export default function InsightAIDemo({ onClose }) {
     
     const newMessages = [...chatMessages, { role: 'user', text: trimmed }];
     setChatMessages(newMessages);
+    setHistory([{ pregunta: trimmed, fecha: 'Justo ahora' }, ...history]);
     setChatInput('');
     setIsAiLoading(true);
 
     setTimeout(() => {
       let aiResponse = {
         role: 'ai',
-        text: 'He analizado la información y encuentro datos relevantes que pueden ser de tu interés.',
-        analysis: 'Consulta procesada contra el modelo de datos. Resultados obtenidos en 1.2s.',
+        text: 'Esta es una demostración interactiva. En un entorno de producción, **InsightAI** se conectará directamente a tu Base de Datos para analizar esta consulta personalizada y generar reportes financieros en tiempo real.',
+        analysis: 'Modo Demo Activo. Conexión a base de datos del cliente requerida para consultas personalizadas.',
         showMiniChart: false,
         showClientTable: false,
       };
@@ -635,7 +645,7 @@ export default function InsightAIDemo({ onClose }) {
                     <CartesianGrid stroke="rgba(59,130,246,0.06)" strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="mes" tick={{ fill: '#8B95B0', fontSize: 11, fontWeight: 400 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fill: '#8B95B0', fontSize: 11, fontWeight: 400 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                    <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '8px', color: '#F0F4FF', fontSize: '12px', fontWeight: 400 }} formatter={(value) => [`$${value.toLocaleString()} MXN`, 'Ingresos']} />
+                    <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '8px', color: '#F0F4FF', fontSize: '12px', fontWeight: 400 }} formatter={(value) => [`$${value.toLocaleString()} MXN`, 'Ingresos']} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
                     <Area type="monotone" dataKey="ingresos" stroke="#3B82F6" strokeWidth={2} fill="url(#gradIngresos)" dot={{ fill: '#3B82F6', r: 3, stroke: '#1A1D2E', strokeWidth: 2 }} activeDot={{ r: 5, fill: '#60A5FA' }} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -649,7 +659,7 @@ export default function InsightAIDemo({ onClose }) {
                     <CartesianGrid stroke="rgba(59,130,246,0.06)" strokeDasharray="3 3" horizontal vertical={false} />
                     <XAxis type="number" tick={{ fill: '#8B95B0', fontSize: 11, fontWeight: 400 }} axisLine={false} tickLine={false} />
                     <YAxis dataKey="nombre" type="category" tick={{ fill: '#F0F4FF', fontSize: 11, fontWeight: 400 }} axisLine={false} tickLine={false} width={75} />
-                    <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '8px', color: '#F0F4FF', fontSize: '12px', fontWeight: 400 }} formatter={(value) => [`${value} unidades`, 'Ventas']} />
+                    <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '8px', color: '#F0F4FF', fontSize: '12px', fontWeight: 400 }} formatter={(value) => [`${value} unidades`, 'Ventas']} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                     <Bar dataKey="ventas" fill="#3B82F6" radius={[0, 4, 4, 0]} barSize={18} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -706,15 +716,23 @@ export default function InsightAIDemo({ onClose }) {
               <div className="hidden lg:flex lg:flex-col lg:w-64 lg:min-w-[256px] p-4 gap-1 border-r border-subtle bg-black/20">
                 <button
                   className="text-sm font-medium rounded-lg py-2.5 px-4 mb-3 transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-                  onClick={() => setChatMessages([...chatMessages, { role: 'user', text: 'Nueva consulta' }])}
+                  onClick={() => setChatMessages([{
+                    role: 'ai',
+                    text: '¿En qué más te puedo ayudar? Prueba con otra de las acciones rápidas.',
+                    analysis: 'Lista para una nueva consulta.'
+                  }])}
                 >+ Nueva consulta</button>
                 <span className="text-[10px] font-medium uppercase tracking-wider px-1 mb-1 text-muted">Historial</span>
-                {chatHistory.map((item, i) => (
-                  <div key={i} className={`rounded-lg px-3 py-2.5 cursor-pointer transition-colors duration-150 hover:bg-white/10 ${i === 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-transparent text-text'}`}>
-                    <span className="text-xs sm:text-sm font-medium block leading-tight">{item.pregunta}</span>
-                    <span className="text-[10px] font-normal block mt-1 text-muted">{item.fecha}</span>
-                  </div>
-                ))}
+                {history.length === 0 ? (
+                  <span className="text-xs px-1 text-muted italic">Aún no hay consultas</span>
+                ) : (
+                  history.map((item, i) => (
+                    <div key={i} className={`rounded-lg px-3 py-2.5 cursor-pointer transition-colors duration-150 hover:bg-white/10 ${i === 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-transparent text-text'}`}>
+                      <span className="text-xs sm:text-sm font-medium block leading-tight">{item.pregunta}</span>
+                      <span className="text-[10px] font-normal block mt-1 text-muted">{item.fecha}</span>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Panel chat */}
@@ -745,7 +763,7 @@ export default function InsightAIDemo({ onClose }) {
                               <ResponsiveContainer width="100%" height={90}>
                                 <BarChart data={top3Semana}>
                                   <XAxis dataKey="nombre" tick={{ fill: '#8B95B0', fontSize: 10, fontWeight: 400 }} axisLine={false} tickLine={false} />
-                                  <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '6px', color: '#F0F4FF', fontSize: '11px' }} />
+                                  <Tooltip contentStyle={{ background: '#13151E', border: '0.5px solid rgba(59,130,246,0.3)', borderRadius: '6px', color: '#F0F4FF', fontSize: '11px' }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                                   <Bar dataKey="ventas" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={28} />
                                 </BarChart>
                               </ResponsiveContainer>
@@ -781,6 +799,7 @@ export default function InsightAIDemo({ onClose }) {
 
                 {/* Input bar */}
                 <div className="p-4 sm:p-5 bg-black/20 border-t border-subtle backdrop-blur-md">
+                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-2 text-muted">Acciones rápidas</span>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {['Top productos', 'Ventas por día', 'Clientes nuevos', 'Comparar períodos'].map(chip => (
                       <button key={chip} onClick={() => handleSendMessage(chip)} className="text-[10px] sm:text-xs font-medium rounded-full px-3 py-1.5 transition-all duration-200 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20">{chip}</button>
@@ -835,26 +854,61 @@ export default function InsightAIDemo({ onClose }) {
             </div>
 
             {/* Conexión activa */}
-            <div className="rounded-xl p-4 sm:p-6 bg-green-500/5 backdrop-blur-md border border-green-500/20 shadow-[0_0_30px_rgba(16,185,129,0.04)]">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div className="rounded-xl p-4 sm:p-6 bg-green-500/5 backdrop-blur-md border border-green-500/20 shadow-[0_0_30px_rgba(16,185,129,0.04)] transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                  <span className={`w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] ${isSyncing ? 'animate-pulse' : ''}`} />
                   <span className="text-sm sm:text-base font-medium text-text">Conexión activa: PostgreSQL</span>
                 </div>
-                <span className="text-[10px] sm:text-xs font-normal text-muted">Sincronizado hace 5 min</span>
+                <span className={`text-[10px] sm:text-xs font-normal ${isSyncing ? 'text-blue-400 animate-pulse' : 'text-muted'}`}>{lastSyncText}</span>
               </div>
+              <p className="text-[11px] sm:text-xs text-muted mb-4 leading-relaxed max-w-3xl">
+                InsightAI está analizando esta base de datos en tiempo real. Todas las consultas que realices en el chat utilizarán inteligencia artificial para convertir tu lenguaje natural en queries SQL, consultando directamente estas tablas de forma segura.
+              </p>
+              
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
-                {[{ label: 'Host', value: 'db.insightai-prod.com' }, { label: 'Base de datos', value: 'ventas_q1_2026' }, { label: 'Tablas detectadas', value: '8 tablas' }].map((item, i) => (
-                  <div key={i} className="rounded-lg p-3 sm:p-4 bg-black/20 border border-subtle">
-                    <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider block mb-1 text-muted">{item.label}</span>
+                {[{ label: 'Host', value: 'db.insightai-prod.com', icon: '🌐' }, { label: 'Base de datos', value: 'ventas_q1_2026', icon: '🗄️' }, { label: 'Tablas detectadas', value: '8 tablas', icon: '📋' }].map((item, i) => (
+                  <div key={i} className="rounded-lg p-3 sm:p-4 bg-black/20 border border-subtle flex flex-col hover:bg-black/40 transition-colors">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-xs">{item.icon}</span>
+                      <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-muted">{item.label}</span>
+                    </div>
                     <span className="text-sm sm:text-base font-medium text-text">{item.value}</span>
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2.5">
-                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.2)]">Resincronizar</button>
-                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 bg-transparent text-blue-400 border border-blue-500/30 hover:bg-blue-500/10 transition-colors">Ver esquema</button>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button 
+                  onClick={handleResync}
+                  disabled={isSyncing}
+                  className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-all shadow-[0_0_10px_rgba(59,130,246,0.2)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isSyncing ? (
+                    <><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"/> Actualizando...</>
+                  ) : 'Resincronizar'}
+                </button>
+                <button 
+                  onClick={() => setShowSchema(!showSchema)}
+                  className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 transition-colors flex items-center gap-2"
+                >
+                  {showSchema ? 'Ocultar esquema' : 'Ver esquema'}
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`transition-transform duration-200 ${showSchema ? 'rotate-180' : ''}`}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
               </div>
+
+              {showSchema && (
+                <div className="mt-5 pt-4 border-t border-white/5 animate-fade-in" style={{ animation: 'fadeSlideUp 0.3s ease-out both' }}>
+                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-3 text-muted">Esquema de tablas detectadas</span>
+                  <div className="flex flex-wrap gap-2">
+                    {['productos', 'ventas', 'clientes', 'transacciones', 'inventario', 'sucursales', 'usuarios', 'categorias'].map(tabla => (
+                      <div key={tabla} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/5 text-[11px] sm:text-xs text-text hover:bg-white/5 hover:border-blue-500/30 transition-colors cursor-default">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                        {tabla}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
