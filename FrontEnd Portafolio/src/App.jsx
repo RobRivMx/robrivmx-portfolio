@@ -85,39 +85,23 @@ const PROJECTS = [
 ];
 
 /* ─────────────────────────────────────────────────────
-   Chat IA — respuestas simuladas
-───────────────────────────────────────────────────── */
-function getAIResponse(query) {
-  const q = query.toLowerCase();
-  if (q.includes('proyecto') || q.includes('trabajo'))
-    return 'Roberto ha liderado proyectos como Non‑Stop Learning (PWA educativa con IA), Smart Finance Pro (finanzas personales), AutoFlow (automatización n8n), InsightAI (dashboard con lenguaje natural) y DocBrain (chatbot RAG empresarial). ¿Cuál te interesa?';
-  if (q.includes('experiencia') || q.includes('años'))
-    return 'Roberto cuenta con más de 8 años de experiencia como Full Stack Architect, especializado en PWAs, serverless, Zero Trust e IA generativa.';
-  if (q.includes('stack') || q.includes('tecnología'))
-    return 'Su stack principal incluye React, Python, FastAPI, PostgreSQL, OpenAI, Claude, n8n y Docker.';
-  if (q.includes('contacto') || q.includes('email'))
-    return 'Puedes contactarlo a través del formulario en la sección de contacto, o en LinkedIn (linkedin.com/in/robrivmx) y GitHub (github.com/RobRivMx).';
-  if (q.includes('tarifa') || q.includes('precio') || q.includes('costo'))
-    return 'Su compensación es MXN 35,000 mensuales o MXN 800 por hora.';
-  return 'Soy el asistente virtual de Roberto Rivera. Puedo informarte sobre su experiencia, proyectos, stack tecnológico, tarifas y más. ¿En qué te ayudo?';
-}
-
-/* ─────────────────────────────────────────────────────
    App principal
 ───────────────────────────────────────────────────── */
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchCmd, setSearchCmd] = useState('');
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', content: '¡Hola! Soy el asistente IA de Roberto Rivera. Pregúntame sobre su experiencia, proyectos o tecnologías.' },
-  ]);
-  const [chatInput, setChatInput] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeDemo, setActiveDemo] = useState(null);
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '', type: 'empleo' });
-  const [contactSent, setContactSent] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+
+  const handleCopyEmail = (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText('arq.roberto.rivera.sanchez@gmail.com');
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2000);
+  };
 
   /* Navegación suave */
   const scrollTo = (e, id) => {
@@ -140,28 +124,7 @@ export default function App() {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  /* Chat */
-  const handleChatSend = (e) => {
-    e.preventDefault();
-    const text = chatInput.trim();
-    if (!text) return;
-    setChatMessages((prev) => [...prev, { role: 'user', content: text }]);
-    setChatInput('');
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: getAIResponse(text) },
-      ]);
-    }, 700);
-  };
-
-  /* Contacto */
-  const handleContactSubmit = (e) => {
-    e.preventDefault();
-    setContactSent(true);
-    setContactForm({ name: '', email: '', message: '', type: 'empleo' });
-    setTimeout(() => setContactSent(false), 3000);
-  };
+  /* Navegación - command */
 
   const NAV_LINKS = [
     { label: 'Sobre mí', id: 'sobre-mi' },
@@ -439,68 +402,96 @@ export default function App() {
 
         {/* Contacto */}
         < section id="contacto" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20" >
-          <div className="flex items-center gap-3 mb-8">
-            <Icon.Mail className="w-6 h-6 text-blue-400" />
-            <h2 className="text-2xl font-medium">Contacto</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <form onSubmit={handleContactSubmit} className="space-y-4">
-              {[
-                { label: 'Nombre', key: 'name', type: 'text', placeholder: 'Tu nombre' },
-                { label: 'Email', key: 'email', type: 'email', placeholder: 'tu@email.com' },
-              ].map(({ label, key, type, placeholder }) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-muted mb-1">{label}</label>
-                  <input
-                    required
-                    type={type}
-                    placeholder={placeholder}
-                    value={contactForm[key]}
-                    onChange={(e) => setContactForm({ ...contactForm, [key]: e.target.value })}
-                    className="w-full px-4 py-3 rounded-card bg-card border border-subtle text-text placeholder-muted/30 focus:border-blue-500/40 outline-none transition-all text-sm font-normal"
-                  />
-                </div>
-              ))}
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">Tipo</label>
-                <select
-                  value={contactForm.type}
-                  onChange={(e) => setContactForm({ ...contactForm, type: e.target.value })}
-                  className="w-full px-4 py-3 rounded-card bg-card border border-subtle text-text focus:border-blue-500/40 outline-none transition-all text-sm font-normal"
-                >
-                  <option value="empleo">Oportunidad laboral</option>
-                  <option value="freelance">Proyecto freelance</option>
-                  <option value="consultoria">Consultoría</option>
-                </select>
+          {/* Call To Action Ejecutivo */}
+          <div className="mb-8 relative p-8 sm:p-12 rounded-card-lg bg-surface border border-blue-500/20 overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
+            {/* Background Glows */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full group-hover:bg-blue-500/20 transition-colors duration-700"></div>
+            
+            <div className="relative z-10 w-full">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
+                <Icon.Zap className="w-3.5 h-3.5" />
+                <span>Disponible para nuevos desafíos</span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-muted mb-1">Mensaje</label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Cuéntame sobre tu proyecto..."
-                  value={contactForm.message}
-                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                  className="w-full px-4 py-3 rounded-card bg-card border border-subtle text-text placeholder-muted/30 focus:border-blue-500/40 outline-none transition-all text-sm font-normal resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={contactSent}
-                className="w-full py-3 rounded-card bg-blue-500 text-text font-medium hover:bg-blue-600 active:scale-95 transition-all shadow-lg disabled:opacity-50"
-              >
-                {contactSent ? '✓ Mensaje enviado' : 'Enviar mensaje'}
-              </button>
-            </form>
-            <div className="text-sm font-normal text-muted space-y-4">
-              <p>¿Tienes un proyecto desafiante? Escríbeme y lo resolvemos juntos.</p>
-              <p className="text-xs">
-                También disponible en{' '}
-                <a href="https://linkedin.com/in/robrivmx" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">LinkedIn</a>
-                {' '}y{' '}
-                <a href="https://github.com/RobRivMx" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">GitHub</a>.
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-text mb-6 tracking-tight">
+                ¿Construimos algo <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">excepcional?</span>
+              </h2>
+              <p className="text-base sm:text-lg text-muted font-normal mb-8 leading-relaxed max-w-2xl">
+                Ya sea que necesites resolver cuellos de botella con Inteligencia Artificial, diseñar arquitecturas robustas desde cero o liderar un equipo técnico hacia el siguiente nivel. <strong className="text-text">Cuéntame tu visión</strong> y diseñemos la arquitectura para hacerla realidad.
               </p>
+              
+              <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap items-start sm:items-center gap-4 sm:gap-6 lg:gap-8 text-sm font-medium text-muted">
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Icon.Check className="w-4 h-4 text-green-400" />
+                  <span>Startups & Enterprise</span>
+                </div>
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Icon.Check className="w-4 h-4 text-green-400" />
+                  <span>Infraestructura Serverless</span>
+                </div>
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Icon.Check className="w-4 h-4 text-green-400" />
+                  <span>Seguridad Zero Trust</span>
+                </div>
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Icon.Check className="w-4 h-4 text-green-400" />
+                  <span>Integración de IA (LLMs)</span>
+                </div>
+              </div>
             </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              {
+                id: 'email',
+                title: 'Email Directo',
+                desc: 'Hablemos por correo',
+                href: '#',
+                onClick: (e) => {
+                  e.preventDefault();
+                  setEmailModalOpen(true);
+                },
+                Icon: Icon.Mail,
+              },
+              {
+                id: 'linkedin',
+                title: 'LinkedIn',
+                desc: 'Red profesional',
+                href: 'https://linkedin.com/in/robrivmx',
+                Icon: Icon.Linkedin,
+              },
+              {
+                id: 'github',
+                title: 'GitHub',
+                desc: 'Código y contribuciones',
+                href: 'https://github.com/RobRivMx',
+                Icon: Icon.Github,
+              },
+              {
+                id: 'whatsapp',
+                title: 'Agendar Llamada',
+                desc: 'WhatsApp Directo',
+                href: 'https://wa.me/5215610480746?text=Hola%20Roberto%2C%20me%20interesa%20tu%20perfil%20como%20Lead%20Full%20Stack%20Architect.',
+                Icon: Icon.MessageCircle,
+              },
+            ].map((card, idx) => (
+              <a
+                key={idx}
+                href={card.href}
+                onClick={card.onClick}
+                target={card.onClick ? undefined : "_blank"}
+                rel={card.onClick ? undefined : "noreferrer"}
+                className="flex items-center gap-4 p-6 rounded-card bg-surface border border-blue-500/20 hover:border-blue-500/50 hover:bg-card hover:-translate-y-1 transition-all group shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)]"
+              >
+                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-[0_0_15px_rgba(59,130,246,0.2)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.6)]">
+                  <card.Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-medium text-text group-hover:text-blue-400 transition-colors">{card.title}</h3>
+                  <p className="text-sm font-normal text-muted">{card.desc}</p>
+                </div>
+              </a>
+            ))}
           </div>
         </section >
 
@@ -528,51 +519,106 @@ export default function App() {
         }}
       />
 
-      {/* ── Chat Widget ───────────────────────────── */}
-      <div className={`fixed bottom-6 right-6 z-[80] flex flex-col transition-all duration-300 ${chatOpen ? 'w-80 h-96' : ''}`}>
-        {chatOpen ? (
-          <div className="flex-1 bg-surface border border-blue-500/20 rounded-card-lg overflow-hidden shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-subtle">
-              <span className="text-sm font-medium">Chat con IA</span>
-              <button onClick={() => setChatOpen(false)} className="text-muted hover:text-text">
-                <Icon.X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
-              {chatMessages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] px-3 py-2 rounded-card text-xs font-normal
-                    ${msg.role === 'user'
-                      ? 'bg-blue-500/20 text-blue-100'
-                      : 'bg-card border border-subtle text-muted'}`}
-                  >
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <form onSubmit={handleChatSend} className="p-3 border-t border-subtle flex gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Pregunta sobre Roberto..."
-                className="flex-1 bg-card border border-subtle rounded-card px-3 py-1.5 text-xs font-normal text-text placeholder-muted/40 outline-none focus:border-blue-500/40"
-              />
-              <button type="submit" className="px-3 py-1.5 rounded-card bg-blue-500 text-white text-xs font-medium hover:bg-blue-600 transition-colors">
-                Enviar
-              </button>
-            </form>
-          </div>
-        ) : (
-          <button
-            onClick={() => setChatOpen(true)}
-            className="w-12 h-12 rounded-full bg-blue-500 shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-all animate-glow"
-          >
-            <Icon.MessageCircle className="w-6 h-6" />
-          </button>
-        )}
+      {/* ── WhatsApp Widget ───────────────────────────── */}
+      <div className="fixed bottom-6 right-6 z-[80]">
+        <a
+          href="https://wa.me/5215610480746?text=Hola%20Roberto%2C%20he%20visto%20tu%20portafolio%20y%20me%20interesa%20tu%20perfil%20como%20Lead%20Full%20Stack%20Architect.%20%C2%BFPodemos%20agendar%20una%20llamada%20para%20platicar%20sobre%20un%20posible%20proyecto%3F"
+          target="_blank"
+          rel="noreferrer"
+          className="w-14 h-14 rounded-full bg-blue-500 shadow-lg flex items-center justify-center text-white hover:bg-blue-600 hover:scale-110 transition-all animate-glow"
+          aria-label="Contactar por WhatsApp"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+          </svg>
+        </a>
       </div>
+
+      {/* ── Modal de Correo Electrónico ── */}
+      {emailModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setEmailModalOpen(false)}>
+          <div className="bg-surface border border-blue-500/20 rounded-card-lg w-full max-w-md shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-5 border-b border-subtle bg-card/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                  <Icon.Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-medium text-text">Enviar Correo</h3>
+                  <p className="text-xs text-muted">Selecciona tu cliente preferido</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setEmailModalOpen(false)}
+                className="text-muted hover:text-text p-2 rounded-full hover:bg-white/5 transition-colors"
+              >
+                <Icon.X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 gap-3">
+                <a 
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=arq.roberto.rivera.sanchez@gmail.com"
+                  target="_blank" rel="noreferrer"
+                  onClick={() => setEmailModalOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-red-500/40 hover:bg-red-500/5 group transition-all"
+                >
+                  <span className="text-sm font-medium text-text group-hover:text-red-400 transition-colors">Abrir en Gmail</span>
+                  <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-red-400 transition-colors" />
+                </a>
+                <a 
+                  href="https://outlook.live.com/mail/0/deeplink/compose?to=arq.roberto.rivera.sanchez@gmail.com"
+                  target="_blank" rel="noreferrer"
+                  onClick={() => setEmailModalOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-blue-500/40 hover:bg-blue-500/5 group transition-all"
+                >
+                  <span className="text-sm font-medium text-text group-hover:text-blue-400 transition-colors">Abrir en Outlook</span>
+                  <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-blue-400 transition-colors" />
+                </a>
+                <a 
+                  href="https://compose.mail.yahoo.com/?to=arq.roberto.rivera.sanchez@gmail.com"
+                  target="_blank" rel="noreferrer"
+                  onClick={() => setEmailModalOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-purple-500/40 hover:bg-purple-500/5 group transition-all"
+                >
+                  <span className="text-sm font-medium text-text group-hover:text-purple-400 transition-colors">Abrir en Yahoo</span>
+                  <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-purple-400 transition-colors" />
+                </a>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="h-px bg-subtle flex-1"></div>
+                <span className="text-xs font-medium text-muted uppercase tracking-wider">O copia la dirección</span>
+                <div className="h-px bg-subtle flex-1"></div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-card border border-subtle rounded-xl px-4 py-3 text-sm font-medium text-text overflow-hidden text-ellipsis whitespace-nowrap">
+                  arq.roberto.rivera.sanchez@gmail.com
+                </div>
+                <button
+                  onClick={handleCopyEmail}
+                  className={`px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${
+                    emailCopied 
+                      ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]' 
+                      : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]'
+                  }`}
+                >
+                  {emailCopied ? (
+                    <>
+                      <Icon.Check className="w-4 h-4" />
+                      Copiado
+                    </>
+                  ) : (
+                    'Copiar'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div >
   );
 }
