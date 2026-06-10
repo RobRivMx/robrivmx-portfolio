@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
+import { docbrainData } from '../data/mockData';
 
 /* ============================================================
    HOOKS PERSONALIZADOS
@@ -57,26 +58,9 @@ function useInView(options = {}) {
    DATOS MOCKEADOS
    ============================================================ */
 
-const documentos = [
-  {
-    id: 1, nombre: 'docbrain.docName1', categoria: 'docbrain.catHR', paginas: 128, subido: 'docbrain.subido1', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#10B981', colorDoc: '#EF4444',
-  },
-  {
-    id: 2, nombre: 'docbrain.docName2', categoria: 'docbrain.catLegal', paginas: 45, subido: 'docbrain.subido2', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#F59E0B', colorDoc: '#3B82F6',
-  },
-  {
-    id: 3, nombre: 'docbrain.docName3', categoria: 'docbrain.catIT', paginas: 23, subido: 'docbrain.subido3', estado: 'indexado', progreso: 100, icono: 'docx', colorCat: '#EF4444', colorDoc: '#3B82F6',
-  },
-  {
-    id: 4, nombre: 'docbrain.docName4', categoria: 'docbrain.catSales', paginas: 89, subido: 'docbrain.subido4', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#3B82F6', colorDoc: '#10B981',
-  },
-  {
-    id: 5, nombre: 'docbrain.docName5', categoria: 'docbrain.catOps', paginas: 34, subido: 'docbrain.subido5', estado: 'procesando', progreso: 67, icono: 'docx', colorCat: '#8B5CF6', colorDoc: '#F97316',
-  },
-  {
-    id: 6, nombre: 'docbrain.docName6', categoria: 'docbrain.catComp', paginas: 12, subido: 'docbrain.subido6', estado: 'indexado', progreso: 100, icono: 'txt', colorCat: '#14B8A6', colorDoc: '#6B7280',
-  },
-];
+const {
+  documentos, estadisticasConsultas, documentosMasConsultados, usuariosAcceso
+} = docbrainData;
 
 const initialMessage = {
   role: 'ai',
@@ -117,23 +101,7 @@ const prebuiltResponses = {
   }
 };
 
-const estadisticasConsultas = [
-  { dia: 'docbrain.day1', consultas: 45 }, { dia: 'docbrain.day2', consultas: 62 }, { dia: 'docbrain.day3', consultas: 38 },
-  { dia: 'docbrain.day4', consultas: 78 }, { dia: 'docbrain.day5', consultas: 91 }, { dia: 'docbrain.day6', consultas: 55 }, { dia: 'docbrain.day7', consultas: 32 },
-];
 
-const documentosMasConsultados = [
-  { nombre: 'docbrain.docShort1', porcentaje: 85 },
-  { nombre: 'docbrain.docShort2', porcentaje: 67 },
-  { nombre: 'docbrain.docShort4', porcentaje: 52 },
-];
-
-const usuariosAcceso = [
-  { nombre: 'Admin (tú)', acceso: 'docbrain.roleAdmin', rol: 'admin' },
-  { nombre: 'Marketing Team', acceso: 'docbrain.access1', rol: 'limitado' },
-  { nombre: 'RR.HH. Team', acceso: 'docbrain.access2', rol: 'limitado' },
-  { nombre: 'Legal Team', acceso: 'docbrain.docShort2', rol: 'limitado' },
-];
 
 /* ============================================================
    COMPONENTES REUTILIZABLES
@@ -287,6 +255,7 @@ function UploadZone() {
             <button 
               className="absolute top-4 right-4 text-muted hover:text-text transition-colors"
               onClick={() => setShowModal(false)}
+              aria-label={t("docbrain.closeModal")}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
@@ -456,6 +425,17 @@ function LoadingDots() {
 /* ============================================================
    COMPONENTE PRINCIPAL
    ============================================================ */
+
+/**
+ * DocBrainDemo Component
+ * 
+ * Interactive demo showcasing AI document processing, semantic search,
+ * and a RAG (Retrieval-Augmented Generation) chat interface.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {Function} props.onClose - Callback to return to portfolio
+ */
 export default function DocBrainDemo({ onClose }) {
   const { t, i18n } = useTranslation();
   const [chatInput, setChatInput] = useState('');
@@ -874,6 +854,7 @@ export default function DocBrainDemo({ onClose }) {
                     <button
                       onClick={handleSendMessage}
                       disabled={isAiLoading}
+                      aria-label={t('docbrain.send')}
                       className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isAiLoading ? 'bg-white/10 text-muted' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
                     >
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">

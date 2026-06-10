@@ -2,9 +2,10 @@
 // Design System: Dark Mode Premium SaaS
 // Demo demostrativa en una sola página con animaciones y magia visual
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
+import { autoflowData } from '../data/mockData';
 
 // ============================================================
 // ICONOS SVG INLINE
@@ -367,6 +368,16 @@ const ChatMessage = ({ role, text, time }) => {
 // ============================================================
 // PÁGINA PRINCIPAL: Demo continua
 // ============================================================
+/**
+ * AutoFlowDemo Component
+ * 
+ * Interactive demo showcasing an automated workflow experience
+ * with visual node animations and an integrated AI chat.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {Function} props.onClose - Callback to return to portfolio
+ */
 export default function AutoFlowDemo({ onClose }) {
     const { t } = useTranslation();
     // Al montar la demo, nos aseguramos de estar en la parte superior de la página
@@ -394,26 +405,16 @@ export default function AutoFlowDemo({ onClose }) {
     const [flowActiveNode, setFlowActiveNode] = useState(-1);
     const [flowRunning, setFlowRunning] = useState(false);
     const [flowLog, setFlowLog] = useState([]);
-        const nodes = [
-        { id: 0, type: 'trigger', label: t('autoflow.node1'), x: 30, y: 40 },
-        { id: 1, type: 'action', label: t('autoflow.node2'), x: 200, y: 40 },
-        { id: 2, type: 'condition', label: t('autoflow.node3'), x: 380, y: 40 },
-        { id: 3, type: 'http', label: t('autoflow.node4'), x: 560, y: 15 },
-        { id: 4, type: 'code', label: t('autoflow.node5'), x: 560, y: 85 },
-    ];
+        const nodes = useMemo(() => autoflowData.nodes.map(n => ({
+            ...n, label: t(n.labelKey)
+        })), [t]);
 
     const runFlowDemo = () => {
         if (flowRunning) return;
         setFlowRunning(true);
         setFlowLog([]);
         let i = 0;
-                const steps = [
-            t('autoflow.step1'),
-            t('autoflow.step2'),
-            t('autoflow.step3'),
-            t('autoflow.step4'),
-            t('autoflow.step5'),
-        ];
+        const steps = useMemo(() => autoflowData.steps.map(s => t(s)), [t]);
         const interval = setInterval(() => {
             if (i < nodes.length) {
                 setFlowActiveNode(i);
@@ -511,17 +512,12 @@ export default function AutoFlowDemo({ onClose }) {
         setConnectorStatus((prev) => ({ ...prev, [name]: newState }));
     };
 
-        const connectors = [
-        { name: 'Gmail', icon: Icons.Mail, connected: connectorStatus.Gmail, category: 'autoflow.catEmail' },
-        { name: 'Slack', icon: Icons.MessageCircle, connected: connectorStatus.Slack, category: 'autoflow.catMessaging' },
-        { name: 'WhatsApp', icon: Icons.MessageCircle, connected: connectorStatus.WhatsApp, category: 'autoflow.catMessaging' },
-        { name: 'PDF Generator', icon: Icons.File, connected: connectorStatus['PDF Generator'], category: 'autoflow.catDocs' },
-        { name: 'CSV Parser', icon: Icons.Table, connected: connectorStatus['CSV Parser'], category: 'autoflow.catData' },
-        { name: 'Google Sheets', icon: Icons.Table, connected: connectorStatus['Google Sheets'], category: 'autoflow.catData' },
-        { name: 'HubSpot CRM', icon: Icons.Link, connected: connectorStatus['HubSpot CRM'], category: 'autoflow.catCRM' },
-        { name: 'Webhook', icon: Icons.Link, connected: connectorStatus.Webhook, category: 'autoflow.catAPIs' },
-        { name: 'OpenAI', icon: Icons.Bot, connected: connectorStatus.OpenAI, category: 'autoflow.catAI' },
-    ];
+        const connectors = useMemo(() => autoflowData.connectorsTemplate.map(c => ({
+        name: c.name,
+        icon: Icons[c.iconName],
+        connected: connectorStatus[c.name],
+        category: c.category
+    })), [connectorStatus]);
 
     return (
         <div className="min-h-screen bg-[#0A0A0F] text-[#F0F4FF] font-sans relative">
@@ -823,6 +819,7 @@ export default function AutoFlowDemo({ onClose }) {
                                     <button
                                         onClick={() => handleSend()}
                                         disabled={isLoading || !input.trim()}
+                                        aria-label={t('autoflow.send')}
                                         className={`w-7 h-7 rounded-full flex items-center justify-center text-white transition-all flex-shrink-0 ${isLoading || !input.trim() ? 'bg-[#3B82F6]/40 cursor-not-allowed' : 'bg-[#3B82F6] hover:bg-[#2563EB]'
                                             }`}
                                     >

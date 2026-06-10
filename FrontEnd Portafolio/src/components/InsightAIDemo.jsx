@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
+import { insightaiData } from '../data/mockData';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
@@ -52,64 +53,14 @@ const useInView = (ref, threshold = 0.2) => {
 };
 
 /* ============================================================
-   DATOS MOCKEADOS
+   DATOS MOCKEADOS (Desde src/data/mockData.js)
    ============================================================ */
-const kpiData = [
-  { label: 'insightai.kpiSales', value: 847320, isCurrency: true, delta: '+12.3%', positive: true, subtitle: 'insightai.kpiSub' },
-  { label: 'insightai.kpiOrders', value: 1847, isCurrency: false, delta: '+8.7%', positive: true, subtitle: 'insightai.kpiSub' },
-  { label: 'insightai.kpiTicket', value: 458, isCurrency: true, delta: '-2.1%', positive: false, subtitle: 'insightai.kpiSub' },
-  { label: 'insightai.kpiConv', value: 3.8, isPercent: true, isFloat: true, delta: '+0.4%', positive: true, subtitle: 'insightai.kpiSub' },
-];
+const { 
+  kpiData, ingresosData, topProductosData, transaccionesData, 
+  conectoresRelacionales, conectoresCloud, conectoresArchivos, 
+  ventasDiariasData, detalleTransacciones, top3Semana 
+} = insightaiData;
 
-const ingresosData = [
-  { mes: 'Ene', ingresos: 620000 }, { mes: 'Feb', ingresos: 710000 }, { mes: 'Mar', ingresos: 695000 },
-  { mes: 'Abr', ingresos: 780000 }, { mes: 'May', ingresos: 820000 }, { mes: 'Jun', ingresos: 847320 },
-];
-
-const topProductosData = [
-  { nombre: 'Laptop Pro', ventas: 245 }, { nombre: 'Teclado Mec', ventas: 189 },
-  { nombre: 'Monitor 4K', ventas: 167 }, { nombre: 'Webcam HD', ventas: 134 }, { nombre: 'Mouse Ergo', ventas: 98 },
-];
-
-const transaccionesData = [
-  { id: '#TX-1847', cliente: 'CorpTech SA', producto: 'Laptop Pro X1', monto: '$24,500', status: 'Completado', fecha: '2026-05-21' },
-  { id: '#TX-1846', cliente: 'InnovaMex', producto: 'Monitor 4K', monto: '$8,900', status: 'Completado', fecha: '2026-05-21' },
-  { id: '#TX-1845', cliente: 'DataFlow', producto: 'Teclado Mec', monto: '$3,200', status: 'Pendiente', fecha: '2026-05-20' },
-  { id: '#TX-1844', cliente: 'CloudServ', producto: 'Webcam HD', monto: '$1,850', status: 'Cancelado', fecha: '2026-05-20' },
-  { id: '#TX-1843', cliente: 'TechNova', producto: 'Mouse Ergo', monto: '$1,450', status: 'Completado', fecha: '2026-05-19' },
-];
-
-
-
-const conectoresRelacionales = [
-  { nombre: 'PostgreSQL', desc: 'insightai.connDesc1', conectado: true, icono: '🐘' },
-  { nombre: 'MySQL', desc: 'insightai.connDesc2', conectado: false, icono: '🐬' },
-  { nombre: 'SQL Server', desc: 'insightai.connDesc3', conectado: false, icono: '🔷' },
-];
-const conectoresCloud = [
-  { nombre: 'Supabase', desc: 'insightai.connDesc4', conectado: false, icono: '⚡' },
-  { nombre: 'PlanetScale', desc: 'insightai.connDesc5', conectado: false, icono: '🪐' },
-  { nombre: 'Neon', desc: 'insightai.connDesc6', conectado: false, icono: '💡' },
-];
-const conectoresArchivos = [
-  { nombre: 'CSV Upload', desc: 'insightai.connDesc7', conectado: true, icono: '📄' },
-  { nombre: 'Google Sheets', desc: 'insightai.connDesc8', conectado: false, icono: '📊' },
-  { nombre: 'Excel', desc: 'insightai.connDesc9', conectado: false, icono: '📗' },
-];
-
-const ventasDiariasData = [
-  { dia: 'Lun', ventas: 8 }, { dia: 'Mar', ventas: 11 }, { dia: 'Mié', ventas: 9 },
-  { dia: 'Jue', ventas: 14 }, { dia: 'Vie', ventas: 15 }, { dia: 'Sáb', ventas: 7 }, { dia: 'Dom', ventas: 3 },
-];
-const detalleTransacciones = [
-  { fecha: '2026-05-18', cliente: 'CorpTech SA', cantidad: 3, precio: '$8,500', sucursal: 'CDMX Norte' },
-  { fecha: '2026-05-19', cliente: 'InnovaMex', cantidad: 2, precio: '$8,500', sucursal: 'Guadalajara' },
-  { fecha: '2026-05-20', cliente: 'DataFlow', cantidad: 5, precio: '$8,200', sucursal: 'Monterrey' },
-  { fecha: '2026-05-21', cliente: 'CloudServ', cantidad: 1, precio: '$8,800', sucursal: 'CDMX Sur' },
-];
-const top3Semana = [
-  { nombre: 'Laptop Pro X1', ventas: 47 }, { nombre: 'Monitor 4K', ventas: 32 }, { nombre: 'Teclado Mec', ventas: 28 },
-];
 
 /* ============================================================
    COMPONENTES REUTILIZABLES
@@ -369,6 +320,17 @@ function ReportGeneratorSection() {
 /* ============================================================
    COMPONENTE PRINCIPAL — ALL IN ONE / MOBILE FIRST
    ============================================================ */
+
+/**
+ * InsightAIDemo Component
+ * 
+ * Interactive demo showcasing AI-driven dashboard and data insights.
+ * Includes data visualizations and a RAG chat interface.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {Function} props.onClose - Callback to return to portfolio
+ */
 export default function InsightAIDemo({ onClose }) {
   const { t, i18n } = useTranslation();
   const toggleLanguage = () => {
@@ -547,6 +509,7 @@ export default function InsightAIDemo({ onClose }) {
               <button
                 onClick={onClose}
                 className="sm:hidden text-muted text-[12px] font-medium hover:text-text transition-all px-2"
+                aria-label={t("insightai.back")}
               >
                 ←
               </button>
@@ -839,7 +802,7 @@ export default function InsightAIDemo({ onClose }) {
                       className="flex-1 text-sm sm:text-base font-normal rounded-xl px-4 py-3 outline-none bg-black/20 border border-subtle text-text focus:border-blue-500/50 focus:bg-black/40 transition-all placeholder:text-muted"
                     />
                     <button
-                      onClick={handleSendMessage} disabled={isAiLoading}
+                      onClick={handleSendMessage} disabled={isAiLoading} aria-label={t('insightai.send')}
                       className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 bg-blue-500 text-white disabled:opacity-50 hover:bg-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.3)] disabled:shadow-none"
                     >
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9L16 2L9 16L7.5 10.5L2 9Z" fill="currentColor" /></svg>

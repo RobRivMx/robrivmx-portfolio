@@ -2,6 +2,18 @@ import { Badge } from './ui/Cards';
 import * as Icon from './Icons';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * ProjectModal Component
+ * 
+ * Displays detailed information about a selected project, including
+ * architecture topology, problem/solution breakdown, and live demo access.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {Object} props.project - Project data object
+ * @param {Function} props.onClose - Callback to close the modal
+ * @param {Function} props.onOpenDemo - Callback to open the interactive demo
+ */
 export default function ProjectModal({ project, onClose, onOpenDemo }) {
     const { t } = useTranslation();
     if (!project) return null;

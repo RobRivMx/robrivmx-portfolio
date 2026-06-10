@@ -10,6 +10,17 @@ const BADGE_VARIANTS = {
     amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
 };
 
+/**
+ * Badge Component
+ * 
+ * Displays a small status pill with different color variants.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Badge content
+ * @param {'default'|'green'|'blue'|'amber'} [props.variant='default'] - Color variant
+ * @param {string} [props.className=''] - Additional CSS classes
+ */
 export function Badge({ children, variant = 'default', className = '' }) {
     return (
         <span
@@ -24,6 +35,18 @@ export function Badge({ children, variant = 'default', className = '' }) {
 /* ─────────────────────────────────────────────────────
    GlowCard — tarjeta con efecto tilt 3-D en hover
 ───────────────────────────────────────────────────── */
+/**
+ * GlowCard Component
+ * 
+ * A card with a 3D tilt effect on hover and optional glowing highlight.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Card content
+ * @param {string} [props.className=''] - Additional CSS classes
+ * @param {boolean} [props.highlight=false] - Whether to apply a blue glow effect
+ * @param {Function} [props.onClick] - Click handler
+ */
 export function GlowCard({ children, className = '', highlight = false, onClick }) {
     const cardRef = useRef(null);
     const [style, setStyle] = useState({});
@@ -71,6 +94,18 @@ export function GlowCard({ children, className = '', highlight = false, onClick 
    StatCard — contador animado con etiqueta
    Activa la animación con IntersectionObserver
 ───────────────────────────────────────────────────── */
+/**
+ * StatCard Component
+ * 
+ * Animated counter card triggered by IntersectionObserver.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {number} props.target - Target number to count up to
+ * @param {string} [props.suffix=''] - Suffix to append to the number (e.g. '%')
+ * @param {string} [props.label] - Subtitle label for the stat
+ * @param {number} [props.duration=2000] - Animation duration in ms
+ */
 export function StatCard({ target, suffix = '', label, duration = 2000 }) {
     const [count, setCount] = useState(0);
     const ref = useRef(null);
@@ -118,6 +153,16 @@ export function StatCard({ target, suffix = '', label, duration = 2000 }) {
 /* ─────────────────────────────────────────────────────
    Typewriter — texto que se escribe carácter a carácter
 ───────────────────────────────────────────────────── */
+/**
+ * Typewriter Component
+ * 
+ * Renders text character by character with a typing effect.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {string} props.text - Text to be typed out
+ * @param {number} [props.speed=80] - Typing speed in ms per character
+ */
 export function Typewriter({ text, speed = 80 }) {
     const [displayed, setDisplayed] = useState('');
     const [index, setIndex] = useState(0);
