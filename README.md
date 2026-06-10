@@ -40,6 +40,7 @@ Looking for a Lead Architect to drive your next big migration or AI integration?
 * 🌐 **Torre Profile:** [torre.ai/robertorivera0](https://torre.ai/robertorivera0)
 * 💼 **LinkedIn:** [linkedin.com/in/robrivmx](https://www.linkedin.com/in/robrivmx)
 * 📧 **Email:** arq.roberto.rivera.sanchez@gmail.com
+* 🔗 Interactive Experience: [robrivmx-portfolio](https://robrivmx.github.io/robrivmx-portfolio/)
 
 ---
 *“Architecture is about understanding the trade-offs and choosing the ones that accelerate business value.”*
