@@ -123,6 +123,11 @@ export function Typewriter({ text, speed = 80 }) {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
+        setDisplayed('');
+        setIndex(0);
+    }, [text]);
+
+    useEffect(() => {
         if (index >= text.length) return;
         const timeout = setTimeout(() => {
             setDisplayed((prev) => prev + text.charAt(index));

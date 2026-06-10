@@ -3,6 +3,7 @@
 // Demo demostrativa en una sola página con animaciones y magia visual
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
 
 // ============================================================
@@ -168,33 +169,45 @@ const ParticleField = () => {
 // ============================================================
 // COMPONENTE: Navbar — Simplificado para la demo
 // ============================================================
-const Navbar = ({ onClose }) => (
+const Navbar = ({ onClose }) => {
+    const { t, i18n } = useTranslation();
+    const toggleLanguage = () => {
+        i18n.changeLanguage(i18n.language.startsWith('es') ? 'en' : 'es');
+    };
+    return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-[#0F1117]/80 backdrop-blur-xl border-b border-[rgba(59,130,246,0.12)] flex items-center px-4 lg:px-6">
       {/* Botón Volver al Portafolio */}
       <button 
         onClick={onClose}
         className="flex items-center gap-1.5 mr-4 px-3 py-1.5 rounded-[8px] bg-white/5 text-[#8B95B0] text-[12px] font-medium hover:text-[#F0F4FF] hover:bg-white/10 border border-[rgba(59,130,246,0.12)] transition-all"
       >
-        ← Volver
+        {t('autoflow.back')}
       </button>
         <div className="flex items-center gap-2.5">
             <Icons.Logo />
             <span className="text-sm font-medium text-[#F0F4FF] tracking-tight">AutoFlow</span>
             <span className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#60A5FA]/10 text-[#60A5FA] border border-[#60A5FA]/20 ml-2">
-                DEMO
+                {t('autoflow.demoBadge')}
             </span>
         </div>
         <div className="flex-1" />
         <div className="flex items-center gap-3">
             <span className="hidden sm:inline px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                En vivo
+                {t('autoflow.live')}
             </span>
+            <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[rgba(59,130,246,0.2)] bg-[#1A1D2E] text-xs font-medium text-[#60A5FA] hover:text-[#F0F4FF] hover:border-[#60A5FA]/40 transition-colors"
+            >
+                {i18n.language.startsWith('es') ? 'EN' : 'ES'}
+            </button>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#60A5FA] to-[#22D3EE] flex items-center justify-center text-[#0A0A0F]">
                 <Icons.User />
             </div>
         </div>
     </header>
-);
+    );
+};
 
 // ============================================================
 // COMPONENTE: Badge
@@ -255,6 +268,7 @@ const FlowNodeAnimado = ({ type, label, x, y, active = false, glow = false }) =>
 // COMPONENTE: ConnectorCardAnimado — Conector con animación
 // ============================================================
 const ConnectorCardAnimado = ({ name, icon: Icon, connected: initialConnected, category, onToggle }) => {
+    const { t } = useTranslation();
     const [connected, setConnected] = useState(initialConnected);
     const [animating, setAnimating] = useState(false);
 
@@ -297,7 +311,7 @@ const ConnectorCardAnimado = ({ name, icon: Icon, connected: initialConnected, c
                 </div>
             </div>
             <p className="text-[13px] font-medium text-[#F0F4FF] mb-1">{name}</p>
-            <p className="text-[11px] font-normal text-[#8B95B0] mb-3">{category}</p>
+            <p className="text-[11px] font-normal text-[#8B95B0] mb-3">{t(category)}</p>
             <div
                 className={`w-full py-1.5 rounded-[8px] text-[11px] font-medium text-center transition-all ${animating
                     ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
@@ -306,7 +320,7 @@ const ConnectorCardAnimado = ({ name, icon: Icon, connected: initialConnected, c
                         : 'bg-[#3B82F6]/10 text-[#60A5FA] border border-[#3B82F6]/20'
                     }`}
             >
-                {animating ? 'Conectando...' : connected ? 'Conectado' : 'Conectar'}
+                {animating ? t('autoflow.connecting') : connected ? t('autoflow.connected') : t('autoflow.connect')}
             </div>
         </div>
     );
@@ -354,6 +368,7 @@ const ChatMessage = ({ role, text, time }) => {
 // PÁGINA PRINCIPAL: Demo continua
 // ============================================================
 export default function AutoFlowDemo({ onClose }) {
+    const { t } = useTranslation();
     // Al montar la demo, nos aseguramos de estar en la parte superior de la página
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -379,12 +394,12 @@ export default function AutoFlowDemo({ onClose }) {
     const [flowActiveNode, setFlowActiveNode] = useState(-1);
     const [flowRunning, setFlowRunning] = useState(false);
     const [flowLog, setFlowLog] = useState([]);
-    const nodes = [
-        { id: 0, type: 'trigger', label: 'Webhook', x: 30, y: 40 },
-        { id: 1, type: 'action', label: 'Filtrar datos', x: 200, y: 40 },
-        { id: 2, type: 'condition', label: '¿Aprobado?', x: 380, y: 40 },
-        { id: 3, type: 'http', label: 'POST a CRM', x: 560, y: 15 },
-        { id: 4, type: 'code', label: 'Transformar', x: 560, y: 85 },
+        const nodes = [
+        { id: 0, type: 'trigger', label: t('autoflow.node1'), x: 30, y: 40 },
+        { id: 1, type: 'action', label: t('autoflow.node2'), x: 200, y: 40 },
+        { id: 2, type: 'condition', label: t('autoflow.node3'), x: 380, y: 40 },
+        { id: 3, type: 'http', label: t('autoflow.node4'), x: 560, y: 15 },
+        { id: 4, type: 'code', label: t('autoflow.node5'), x: 560, y: 85 },
     ];
 
     const runFlowDemo = () => {
@@ -392,12 +407,12 @@ export default function AutoFlowDemo({ onClose }) {
         setFlowRunning(true);
         setFlowLog([]);
         let i = 0;
-        const steps = [
-            'Webhook recibido: nuevo lead desde landing page',
-            'Validando email y nombre del lead...',
-            '¿Lead aprobado? → Cumple criterios de segmentación',
-            'Enviando datos a HubSpot CRM...',
-            'Transformando payload a formato API v2',
+                const steps = [
+            t('autoflow.step1'),
+            t('autoflow.step2'),
+            t('autoflow.step3'),
+            t('autoflow.step4'),
+            t('autoflow.step5'),
         ];
         const interval = setInterval(() => {
             if (i < nodes.length) {
@@ -416,7 +431,7 @@ export default function AutoFlowDemo({ onClose }) {
 
     // Estado del chat
     const [messages, setMessages] = useState([
-        { id: 1, role: 'bot', text: 'Sistemas en línea. Soy **AutoFlow Nexus**, tu orquestador IA. Estoy listo para procesar tus requerimientos, sintetizar pipelines y ejecutar nodos en tiempo real. ¿Qué arquitectura vamos a construir hoy?', time: '10:32' },
+        { id: 1, role: 'bot', text: t('autoflow.botWelcome'), time: '10:32' },
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -448,15 +463,15 @@ export default function AutoFlowDemo({ onClose }) {
         setTimeout(() => {
             let botResponse = '';
             if (msgText.includes('lead') || msgText.includes('CRM') || msgText.includes('scan_leads')) {
-                botResponse = 'Analizando semántica del requerimiento... **Pipeline detectado: Captura y Nutrición de Leads**.\n\nHe sintetizado la siguiente arquitectura óptima:\n1. **Trigger:** Webhook dinámico (Escucha activa)\n2. **Procesador:** Filtro Regex para email/nombre\n3. **Acción:** Integración SMTP (Bienvenida)\n4. **Notificación:** Ping a Slack/Teams\n\nDesplegando nodos en el entorno visual. Iniciando simulación en 3, 2, 1...';
+                botResponse = t('autoflow.botResp1');
                 // Activar el flujo automáticamente como magia
                 setTimeout(() => {
                     if (!flowRunning) runFlowDemo();
                 }, 2500);
             } else if (msgText.includes('conectar') || msgText.includes('integrar') || msgText.includes('connect')) {
-                botResponse = 'Accediendo al registro de integraciones... \n\nTu ecosistema actual tiene autorizaciones OAuth válidas para **Gmail** y **Slack**. Puedes gestionar tokens y Webhooks directamente en la consola de Conectores. ¿Deseas aprovisionar una nueva API Key?';
+                botResponse = t('autoflow.botResp2');
             } else {
-                botResponse = 'Recibido. Analizando tu instrucción mediante NLP...\n\nComo tu orquestador IA, puedo estructurar flujos complejos, realizar debugging de payloads en tiempo real o sugerir optimizaciones de rendimiento. Por favor, sé más específico o usa uno de los comandos rápidos.';
+                botResponse = t('autoflow.botRespDefault');
             }
             setMessages((prev) => [
                 ...prev,
@@ -473,10 +488,10 @@ export default function AutoFlowDemo({ onClose }) {
 
     // Sugerencias rápidas del chat
     const suggestions = [
-        { cmd: '/scan_leads', desc: 'Sintetizar flujo CRM' },
-        { cmd: '/connect', desc: 'Gestionar integraciones' },
-        { cmd: '/optimize', desc: 'Analizar latencia de nodos' },
-        { cmd: '/debug', desc: 'Revisar logs de error' },
+        { cmd: '/scan_leads', desc: t('autoflow.cmd1Desc') },
+        { cmd: '/connect', desc: t('autoflow.cmd2Desc') },
+        { cmd: '/optimize', desc: t('autoflow.cmd3Desc') },
+        { cmd: '/debug', desc: t('autoflow.cmd4Desc') },
     ];
 
     // Estado de conectores
@@ -496,16 +511,16 @@ export default function AutoFlowDemo({ onClose }) {
         setConnectorStatus((prev) => ({ ...prev, [name]: newState }));
     };
 
-    const connectors = [
-        { name: 'Gmail', icon: Icons.Mail, connected: connectorStatus.Gmail, category: 'Email' },
-        { name: 'Slack', icon: Icons.MessageCircle, connected: connectorStatus.Slack, category: 'Mensajería' },
-        { name: 'WhatsApp', icon: Icons.MessageCircle, connected: connectorStatus.WhatsApp, category: 'Mensajería' },
-        { name: 'PDF Generator', icon: Icons.File, connected: connectorStatus['PDF Generator'], category: 'Documentos' },
-        { name: 'CSV Parser', icon: Icons.Table, connected: connectorStatus['CSV Parser'], category: 'Datos' },
-        { name: 'Google Sheets', icon: Icons.Table, connected: connectorStatus['Google Sheets'], category: 'Datos' },
-        { name: 'HubSpot CRM', icon: Icons.Link, connected: connectorStatus['HubSpot CRM'], category: 'CRM' },
-        { name: 'Webhook', icon: Icons.Link, connected: connectorStatus.Webhook, category: 'APIs' },
-        { name: 'OpenAI', icon: Icons.Bot, connected: connectorStatus.OpenAI, category: 'IA' },
+        const connectors = [
+        { name: 'Gmail', icon: Icons.Mail, connected: connectorStatus.Gmail, category: 'autoflow.catEmail' },
+        { name: 'Slack', icon: Icons.MessageCircle, connected: connectorStatus.Slack, category: 'autoflow.catMessaging' },
+        { name: 'WhatsApp', icon: Icons.MessageCircle, connected: connectorStatus.WhatsApp, category: 'autoflow.catMessaging' },
+        { name: 'PDF Generator', icon: Icons.File, connected: connectorStatus['PDF Generator'], category: 'autoflow.catDocs' },
+        { name: 'CSV Parser', icon: Icons.Table, connected: connectorStatus['CSV Parser'], category: 'autoflow.catData' },
+        { name: 'Google Sheets', icon: Icons.Table, connected: connectorStatus['Google Sheets'], category: 'autoflow.catData' },
+        { name: 'HubSpot CRM', icon: Icons.Link, connected: connectorStatus['HubSpot CRM'], category: 'autoflow.catCRM' },
+        { name: 'Webhook', icon: Icons.Link, connected: connectorStatus.Webhook, category: 'autoflow.catAPIs' },
+        { name: 'OpenAI', icon: Icons.Bot, connected: connectorStatus.OpenAI, category: 'autoflow.catAI' },
     ];
 
     return (
@@ -545,29 +560,29 @@ export default function AutoFlowDemo({ onClose }) {
                     <div className="relative z-10 max-w-3xl mx-auto">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#60A5FA]/10 border border-[#60A5FA]/20 text-[#60A5FA] text-[11px] font-medium mb-6 animate-fadeIn">
                             <Icons.Sparkles />
-                            Automatización empresarial con IA
+                            {t('autoflow.badgeAi')}
                         </div>
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-[#F0F4FF] mb-4 tracking-tight leading-tight animate-fadeIn" style={{ animationDelay: '0.1s' }}>
-                            Automatiza tu negocio con{' '}
+                            {t('autoflow.title1')}{' '}
                             <span className="bg-gradient-to-r from-[#60A5FA] to-[#22D3EE] bg-clip-text text-transparent">
-                                inteligencia
+                                {t('autoflow.title2')}
                             </span>
                         </h1>
                         <p className="text-[15px] sm:text-[16px] font-normal text-[#8B95B0] max-w-xl mx-auto mb-8 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-                            Diseña flujos de trabajo potentes con n8n, potenciados por IA. Conecta tus servicios, automatiza procesos y delega tareas al asistente inteligente.
+                            {t('autoflow.desc')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center animate-fadeIn" style={{ animationDelay: '0.3s' }}>
                             <button
                                 onClick={() => document.getElementById('flow-section')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="px-5 py-2.5 rounded-[8px] bg-[#3B82F6] text-white text-[13px] font-medium hover:bg-[#2563EB] transition-colors flex items-center gap-2 justify-center"
                             >
-                                <Icons.Play /> Ver demo en vivo
+                                <Icons.Play /> {t('autoflow.btnLive')}
                             </button>
                             <button
                                 onClick={() => document.getElementById('chat-section')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="px-5 py-2.5 rounded-[8px] border border-[rgba(59,130,246,0.15)] text-[#F0F4FF] text-[13px] font-medium hover:bg-white/[0.03] transition-colors flex items-center gap-2 justify-center"
                             >
-                                <Icons.Bot /> Hablar con IA
+                                <Icons.Bot /> {t('autoflow.btnAi')}
                             </button>
                         </div>
                     </div>
@@ -581,14 +596,14 @@ export default function AutoFlowDemo({ onClose }) {
                 {/* ========== MÉTRICAS ========== */}
                 <section ref={metricsRef} className="relative max-w-5xl mx-auto px-4 py-16">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">Métricas en tiempo real</h2>
-                        <p className="text-[13px] font-normal text-[#8B95B0]">Monitorea el rendimiento de tus automatizaciones</p>
+                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">{t('autoflow.metricsTitle')}</h2>
+                        <p className="text-[13px] font-normal text-[#8B95B0]">{t('autoflow.metricsDesc')}</p>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
-                            { label: 'Flujos activos', value: flowsCount, icon: Icons.Activity, accent: 'blue' },
-                            { label: 'Ejecuciones hoy', value: execsCount, icon: Icons.Play, accent: 'emerald' },
-                            { label: 'Errores', value: errorsCount, icon: Icons.AlertCircle, accent: 'red' },
+                            { label: t('autoflow.metric1'), value: flowsCount, icon: Icons.Activity, accent: 'blue' },
+                            { label: t('autoflow.metric2'), value: execsCount, icon: Icons.Play, accent: 'emerald' },
+                            { label: t('autoflow.metric3'), value: errorsCount, icon: Icons.AlertCircle, accent: 'red' },
                         ].map((m) => {
                             const accents = {
                                 blue: 'border-blue-500/20 bg-blue-500/5',
@@ -600,7 +615,7 @@ export default function AutoFlowDemo({ onClose }) {
                                     key={m.label}
                                     className={`p-5 rounded-[12px] border ${accents[m.accent]} transition-all duration-700 ${metricsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                                         }`}
-                                    style={{ transitionDelay: `${m.label === 'Flujos activos' ? 0 : m.label === 'Ejecuciones hoy' ? 0.15 : 0.3}s` }}
+                                    style={{ transitionDelay: `${m.label === t('autoflow.metric1') ? 0 : m.label === t('autoflow.metric2') ? 0.15 : 0.3}s` }}
                                 >
                                     <div className="flex items-start justify-between">
                                         <div>
@@ -620,17 +635,17 @@ export default function AutoFlowDemo({ onClose }) {
                 {/* ========== FLUJO INTELIGENTE ========== */}
                 <section id="flow-section" ref={flowRef} className="relative max-w-5xl mx-auto px-4 py-16">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">Flujo Inteligente</h2>
-                        <p className="text-[13px] font-normal text-[#8B95B0]">Visualiza y ejecuta automatizaciones con un solo clic</p>
+                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">{t('autoflow.flowTitle')}</h2>
+                        <p className="text-[13px] font-normal text-[#8B95B0]">{t('autoflow.flowDesc')}</p>
                     </div>
 
                     <div className={`rounded-[16px] border border-[rgba(59,130,246,0.15)] bg-[#0F1117] overflow-hidden transition-all duration-700 ${flowInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                         {/* Header del flujo */}
                         <div className="flex items-center justify-between p-4 border-b border-[rgba(59,130,246,0.12)]">
                             <div>
-                                <h3 className="text-sm font-medium text-[#F0F4FF]">Onboarding CRM</h3>
+                                <h3 className="text-sm font-medium text-[#F0F4FF]">{t('autoflow.flowName')}</h3>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                    <Badge variant="success">Listo para ejecutar</Badge>
+                                    <Badge variant="success">{t('autoflow.flowReady')}</Badge>
                                 </div>
                             </div>
                             <button
@@ -644,11 +659,11 @@ export default function AutoFlowDemo({ onClose }) {
                                 {flowRunning ? (
                                     <>
                                         <span className="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-                                        Ejecutando...
+                                        {t('autoflow.flowRunning')}
                                     </>
                                 ) : (
                                     <>
-                                        <Icons.Play /> Ejecutar demo
+                                        <Icons.Play /> {t('autoflow.flowRunBtn')}
                                     </>
                                 )}
                             </button>
@@ -712,8 +727,8 @@ export default function AutoFlowDemo({ onClose }) {
                 {/* ========== CHAT IA ========== */}
                 <section id="chat-section" ref={chatRef} className="relative max-w-5xl mx-auto px-4 py-16">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">Asistente IA</h2>
-                        <p className="text-[13px] font-normal text-[#8B95B0]">Conversa con la IA para crear, depurar y optimizar flujos</p>
+                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">{t('autoflow.chatTitle')}</h2>
+                        <p className="text-[13px] font-normal text-[#8B95B0]">{t('autoflow.chatDesc')}</p>
                     </div>
 
                     <div className={`grid grid-cols-1 lg:grid-cols-3 gap-4 transition-all duration-700 ${chatInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
@@ -726,14 +741,14 @@ export default function AutoFlowDemo({ onClose }) {
                                         <Icons.Bot />
                                     </div>
                                     <div>
-                                        <span className="text-[13px] font-semibold text-[#F0F4FF] block">AutoFlow Nexus</span>
+                                        <span className="text-[13px] font-semibold text-[#F0F4FF] block">{t('autoflow.botName')}</span>
                                         <div className="flex items-center gap-1.5 mt-0.5">
                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] animate-pulse" />
-                                            <span className="text-[10px] font-medium text-emerald-400">GPT-4o En línea</span>
+                                            <span className="text-[10px] font-medium text-emerald-400">{t('autoflow.botStatus')}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-[11px] font-medium text-[#8B95B0] mb-3 uppercase tracking-wider">Comandos Rápidos</p>
+                                <p className="text-[11px] font-medium text-[#8B95B0] mb-3 uppercase tracking-wider">{t('autoflow.quickCmds')}</p>
                                 <div className="space-y-2">
                                     {suggestions.map((s) => (
                                         <button
@@ -754,7 +769,7 @@ export default function AutoFlowDemo({ onClose }) {
                             <div className="p-4 rounded-[12px] bg-gradient-to-r from-[#22D3EE]/10 to-[#3B82F6]/10 border border-[#22D3EE]/20 text-center relative overflow-hidden">
                                 <div className="absolute -inset-1 bg-gradient-to-r from-[#22D3EE]/0 via-[#22D3EE]/10 to-[#3B82F6]/0 animate-pulse pointer-events-none" />
                                 <p className="text-[11px] font-medium text-[#22D3EE] flex items-center justify-center gap-1.5 relative z-10">
-                                    <Icons.Sparkles /> Nexus puede orquestar flujos autónomamente
+                                    <Icons.Sparkles /> {t('autoflow.magicAction')}
                                 </p>
                             </div>
                         </div>
@@ -763,10 +778,10 @@ export default function AutoFlowDemo({ onClose }) {
                         <div className="lg:col-span-2 rounded-[16px] border border-[rgba(59,130,246,0.15)] bg-[#0A0A0F]/80 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col h-[480px] overflow-hidden">
                             <div className="p-4 border-b border-[rgba(59,130,246,0.12)] bg-[#1A1D2E]/50 flex items-center justify-between">
                                 <h3 className="text-[13px] font-medium text-[#F0F4FF] flex items-center gap-2">
-                                    <Icons.Activity /> Monitor de Interacciones
+                                    <Icons.Activity /> {t('autoflow.monitor')}
                                 </h3>
                                 <span className="px-2 py-0.5 rounded-full text-[9px] font-medium bg-[#3B82F6]/10 text-[#60A5FA] border border-[#3B82F6]/20">
-                                    Terminal Activa
+                                    {t('autoflow.terminal')}
                                 </span>
                             </div>
                             <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -789,7 +804,7 @@ export default function AutoFlowDemo({ onClose }) {
                                                     />
                                                 ))}
                                             </div>
-                                            <span className="text-[11px] font-mono text-[#60A5FA] animate-pulse relative z-10">Procesando_</span>
+                                            <span className="text-[11px] font-mono text-[#60A5FA] animate-pulse relative z-10">{t('autoflow.processing')}</span>
                                         </div>
                                     </div>
                                 )}
@@ -801,7 +816,7 @@ export default function AutoFlowDemo({ onClose }) {
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                        placeholder={isLoading ? 'La IA está escribiendo...' : 'Escribe tu mensaje...'}
+                                        placeholder={isLoading ? t('autoflow.typing') : t('autoflow.placeholder')}
                                         className="flex-1 bg-transparent text-[12px] font-normal text-[#F0F4FF] placeholder-[#8B95B0] outline-none"
                                         disabled={isLoading}
                                     />
@@ -822,8 +837,8 @@ export default function AutoFlowDemo({ onClose }) {
                 {/* ========== CONECTORES ========== */}
                 <section ref={connectorsRef} className="relative max-w-5xl mx-auto px-4 py-16">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">Conectores</h2>
-                        <p className="text-[13px] font-normal text-[#8B95B0]">Integra tus servicios favoritos. Haz clic para conectar/desconectar.</p>
+                        <h2 className="text-2xl font-medium text-[#F0F4FF] mb-2">{t('autoflow.connectorsTitle')}</h2>
+                        <p className="text-[13px] font-normal text-[#8B95B0]">{t('autoflow.connectorsDesc')}</p>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                         {connectors.map((c, i) => (
@@ -841,17 +856,17 @@ export default function AutoFlowDemo({ onClose }) {
                         <div className="flex items-center justify-center gap-8">
                             <div>
                                 <p className="text-xl font-medium text-[#F0F4FF]">{Object.values(connectorStatus).filter(Boolean).length}</p>
-                                <p className="text-[10px] font-normal text-[#8B95B0]">Conectados</p>
+                                <p className="text-[10px] font-normal text-[#8B95B0]">{t('autoflow.summaryConnected')}</p>
                             </div>
                             <div className="w-px h-8 bg-[rgba(59,130,246,0.15)]" />
                             <div>
                                 <p className="text-xl font-medium text-[#F0F4FF]">{Object.values(connectorStatus).filter((v) => !v).length}</p>
-                                <p className="text-[10px] font-normal text-[#8B95B0]">Pendientes</p>
+                                <p className="text-[10px] font-normal text-[#8B95B0]">{t('autoflow.summaryPending')}</p>
                             </div>
                             <div className="w-px h-8 bg-[rgba(59,130,246,0.15)]" />
                             <div>
                                 <p className="text-xl font-medium text-emerald-400">100%</p>
-                                <p className="text-[10px] font-normal text-[#8B95B0]">Uptime</p>
+                                <p className="text-[10px] font-normal text-[#8B95B0]">{t('autoflow.summaryUptime')}</p>
                             </div>
                         </div>
                     </div>
@@ -866,7 +881,7 @@ export default function AutoFlowDemo({ onClose }) {
                             <span className="text-[10px] sm:text-xs rounded-full px-2 py-0.5 ml-2 bg-[#60A5FA]/10 text-[#60A5FA] border border-[#60A5FA]/20">DEMO</span>
                         </div>
                         <p className="text-xs text-[#8B95B0]">
-                            Automatización empresarial con n8n · IA · Webhooks
+                            {t('autoflow.footerDesc')}
                         </p>
                     </div>
                 </footer>

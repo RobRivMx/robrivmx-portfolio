@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area,
@@ -54,10 +55,10 @@ const useInView = (ref, threshold = 0.2) => {
    DATOS MOCKEADOS
    ============================================================ */
 const kpiData = [
-  { label: 'Ingresos del mes', value: 847320, isCurrency: true, delta: '+12.3%', positive: true, subtitle: 'vs mes anterior' },
-  { label: 'Órdenes activas', value: 1847, isCurrency: false, delta: '+8.7%', positive: true, subtitle: 'vs mes anterior' },
-  { label: 'Ticket promedio', value: 458, isCurrency: true, delta: '-2.1%', positive: false, subtitle: 'vs mes anterior' },
-  { label: 'Tasa de conversión', value: 3.8, isPercent: true, isFloat: true, delta: '+0.4%', positive: true, subtitle: 'vs mes anterior' },
+  { label: 'insightai.kpiSales', value: 847320, isCurrency: true, delta: '+12.3%', positive: true, subtitle: 'insightai.kpiSub' },
+  { label: 'insightai.kpiOrders', value: 1847, isCurrency: false, delta: '+8.7%', positive: true, subtitle: 'insightai.kpiSub' },
+  { label: 'insightai.kpiTicket', value: 458, isCurrency: true, delta: '-2.1%', positive: false, subtitle: 'insightai.kpiSub' },
+  { label: 'insightai.kpiConv', value: 3.8, isPercent: true, isFloat: true, delta: '+0.4%', positive: true, subtitle: 'insightai.kpiSub' },
 ];
 
 const ingresosData = [
@@ -81,19 +82,19 @@ const transaccionesData = [
 
 
 const conectoresRelacionales = [
-  { nombre: 'PostgreSQL', desc: 'Base de datos relacional open source', conectado: true, icono: '🐘' },
-  { nombre: 'MySQL', desc: 'Motor de base de datos popular', conectado: false, icono: '🐬' },
-  { nombre: 'SQL Server', desc: 'Base de datos empresarial Microsoft', conectado: false, icono: '🔷' },
+  { nombre: 'PostgreSQL', desc: 'insightai.connDesc1', conectado: true, icono: '🐘' },
+  { nombre: 'MySQL', desc: 'insightai.connDesc2', conectado: false, icono: '🐬' },
+  { nombre: 'SQL Server', desc: 'insightai.connDesc3', conectado: false, icono: '🔷' },
 ];
 const conectoresCloud = [
-  { nombre: 'Supabase', desc: 'Backend como servicio con PostgreSQL', conectado: false, icono: '⚡' },
-  { nombre: 'PlanetScale', desc: 'MySQL serverless en la nube', conectado: false, icono: '🪐' },
-  { nombre: 'Neon', desc: 'PostgreSQL serverless escalable', conectado: false, icono: '💡' },
+  { nombre: 'Supabase', desc: 'insightai.connDesc4', conectado: false, icono: '⚡' },
+  { nombre: 'PlanetScale', desc: 'insightai.connDesc5', conectado: false, icono: '🪐' },
+  { nombre: 'Neon', desc: 'insightai.connDesc6', conectado: false, icono: '💡' },
 ];
 const conectoresArchivos = [
-  { nombre: 'CSV Upload', desc: 'Sube archivos CSV directamente', conectado: true, icono: '📄' },
-  { nombre: 'Google Sheets', desc: 'Conecta hojas de cálculo', conectado: false, icono: '📊' },
-  { nombre: 'Excel', desc: 'Archivos Excel (.xlsx)', conectado: false, icono: '📗' },
+  { nombre: 'CSV Upload', desc: 'insightai.connDesc7', conectado: true, icono: '📄' },
+  { nombre: 'Google Sheets', desc: 'insightai.connDesc8', conectado: false, icono: '📊' },
+  { nombre: 'Excel', desc: 'insightai.connDesc9', conectado: false, icono: '📗' },
 ];
 
 const ventasDiariasData = [
@@ -160,10 +161,11 @@ function KpiCard({ label, value, isCurrency, isPercent, isFloat, delta, positive
 }
 
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const colors = {
-    Completado: { bg: 'rgba(16,185,129,0.12)', text: '#10B981', dot: '#10B981' },
-    Pendiente: { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B', dot: '#F59E0B' },
-    Cancelado: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444', dot: '#EF4444' },
+    Completado: { bg: 'rgba(16,185,129,0.12)', text: '#10B981', dot: '#10B981', label: t('insightai.statusCompleted', 'Completed') },
+    Pendiente: { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B', dot: '#F59E0B', label: t('insightai.statusPending', 'Pending') },
+    Cancelado: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444', dot: '#EF4444', label: t('insightai.statusCancelled', 'Cancelled') },
   };
   const c = colors[status] || colors.Pendiente;
   return (
@@ -172,12 +174,13 @@ function StatusBadge({ status }) {
       style={{ background: c.bg, color: c.text }}
     >
       <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.dot }} />
-      {status}
+      {c.label}
     </span>
   );
 }
 
 function ConnectorCard({ nombre, desc, conectado: inicialConectado, icono }) {
+  const { t } = useTranslation();
   const [isConnecting, setIsConnecting] = useState(false);
   const [conectado, setConectado] = useState(inicialConectado);
 
@@ -201,7 +204,7 @@ function ConnectorCard({ nombre, desc, conectado: inicialConectado, icono }) {
         />
       </div>
       <span className="text-sm sm:text-base font-medium text-text">{nombre}</span>
-      <span className="text-[11px] sm:text-xs font-normal leading-relaxed text-muted">{desc}</span>
+      <span className="text-[11px] sm:text-xs font-normal leading-relaxed text-muted">{t(desc)}</span>
       <button
         onClick={handleConnect}
         disabled={isConnecting}
@@ -216,9 +219,9 @@ function ConnectorCard({ nombre, desc, conectado: inicialConectado, icono }) {
         {isConnecting ? (
           <span className="flex items-center justify-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border-2 border-yellow-500 border-t-transparent animate-spin" />
-            Conectando...
+            {t('insightai.btnConnecting')}
           </span>
-        ) : conectado ? 'Configurar' : 'Conectar'}
+        ) : conectado ? t('insightai.btnConfig') : t('insightai.btnConnect')}
       </button>
     </div>
   );
@@ -242,6 +245,7 @@ function LoadingDots() {
 }
 
 function ReportGeneratorSection() {
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -251,14 +255,14 @@ function ReportGeneratorSection() {
     setIsGenerating(true);
     setShowPreview(false);
     setProgress(0);
-    setStatusText('Analizando tablas de base de datos...');
+    setStatusText(t('insightai.repStep1'));
     
     let currentProgress = 0;
     const interval = setInterval(() => {
       currentProgress += Math.random() * 15;
-      if (currentProgress > 30 && currentProgress < 60) setStatusText('Cruzando métricas de ventas vs inventario...');
-      if (currentProgress >= 60 && currentProgress < 90) setStatusText('Generando gráficas predictivas con IA...');
-      if (currentProgress >= 90) setStatusText('Ensamblando y renderizando PDF ejecutivo...');
+      if (currentProgress > 30 && currentProgress < 60) setStatusText(t('insightai.repStep2'));
+      if (currentProgress >= 60 && currentProgress < 90) setStatusText(t('insightai.repStep3'));
+      if (currentProgress >= 90) setStatusText(t('insightai.repStep4'));
       
       if (currentProgress >= 100) {
         clearInterval(interval);
@@ -275,12 +279,12 @@ function ReportGeneratorSection() {
 
   return (
     <section className="animate-fade-in delay-300">
-      <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">Generador de Reportes</h2>
+      <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">{t('insightai.repTitle')}</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Configurador */}
         <div className="rounded-xl p-5 sm:p-6 bg-white/5 backdrop-blur-xl border border-subtle">
-          <h3 className="text-base sm:text-lg font-medium mb-5 text-text">Crear reporte ejecutivo</h3>
-          {['Tipo de reporte', 'Período', 'Formato'].map((label, idx) => (
+          <h3 className="text-base sm:text-lg font-medium mb-5 text-text">{t('insightai.repCreate')}</h3>
+          {[t('insightai.repLabel1'), t('insightai.repLabel2'), t('insightai.repLabel3')].map((label, idx) => (
             <div key={label} className="mb-4">
               <label className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-1.5 text-muted">{label}</label>
               <div className="relative">
@@ -288,16 +292,16 @@ function ReportGeneratorSection() {
                   className="w-full text-xs sm:text-sm font-normal rounded-lg px-3.5 py-2.5 outline-none appearance-none cursor-pointer bg-black/20 border border-subtle text-text focus:border-blue-500/50 transition-colors"
                   defaultValue={idx === 0 ? 'ventas' : idx === 1 ? 'este_mes' : 'pdf'}
                 >
-                  {idx === 0 && (<><option value="ventas">Reporte de ventas</option><option value="inventario">Reporte de inventario</option><option value="clientes">Reporte de clientes</option><option value="financiero">Reporte financiero</option></>)}
-                  {idx === 1 && (<><option value="este_mes">Este mes</option><option value="mes_anterior">Mes anterior</option><option value="q1_2026">Q1 2026</option></>)}
-                  {idx === 2 && (<><option value="pdf">PDF ejecutivo</option><option value="excel">Excel (.xlsx)</option><option value="csv">CSV</option></>)}
+                  {idx === 0 && (<><option value="ventas">{t('insightai.repType1')}</option><option value="inventario">{t('insightai.repType2')}</option><option value="clientes">{t('insightai.repType3')}</option><option value="financiero">{t('insightai.repType4')}</option></>)}
+                  {idx === 1 && (<><option value="este_mes">{t('insightai.repPer1')}</option><option value="mes_anterior">{t('insightai.repPer2')}</option><option value="q1_2026">{t('insightai.repPer3')}</option></>)}
+                  {idx === 2 && (<><option value="pdf">{t('insightai.repFmt1')}</option><option value="excel">{t('insightai.repFmt2')}</option><option value="csv">{t('insightai.repFmt3')}</option></>)}
                 </select>
                 <svg className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="#8B95B0" strokeWidth="1.5" strokeLinecap="round" /></svg>
               </div>
             </div>
           ))}
-          <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">Incluir</span>
-          {[{ label: 'Gráficas automáticas', checked: true }, { label: 'Resumen ejecutivo con IA', checked: true }, { label: 'Comparativo vs período anterior', checked: true }, { label: 'Predicciones próximo período', checked: false }, { label: 'Alertas y anomalías', checked: false }].map((opt, i) => (
+          <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">{t('insightai.repInclude')}</span>
+          {[{ label: t('insightai.repInc1'), checked: true }, { label: t('insightai.repInc2'), checked: true }, { label: t('insightai.repInc3'), checked: true }, { label: t('insightai.repInc4'), checked: false }, { label: t('insightai.repInc5'), checked: false }].map((opt, i) => (
             <label key={i} className={`flex items-center gap-2.5 py-1.5 cursor-pointer text-xs sm:text-sm font-medium ${opt.checked ? 'text-text' : 'text-muted'}`}>
               <div className={`w-[18px] h-[18px] rounded flex items-center justify-center flex-shrink-0 border transition-colors ${opt.checked ? 'border-blue-500 bg-blue-500' : 'border-subtle bg-transparent'}`}>
                 {opt.checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
@@ -310,7 +314,7 @@ function ReportGeneratorSection() {
             disabled={isGenerating}
             className="w-full text-sm sm:text-base font-medium rounded-xl py-3.5 mt-5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)] disabled:opacity-70 disabled:shadow-none"
           >
-            {isGenerating ? 'Generando...' : 'Generar con IA'}
+            {isGenerating ? t('insightai.btnGenerating') : t('insightai.btnGenerate')}
           </button>
         </div>
 
@@ -319,7 +323,7 @@ function ReportGeneratorSection() {
           {!isGenerating && !showPreview && (
             <div className="text-center text-muted flex flex-col items-center opacity-60">
               <svg className="w-12 h-12 mb-3 text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              <p className="text-sm">Configura y presiona "Generar con IA" para ver el reporte interactivo.</p>
+              <p className="text-sm">{t('insightai.repPreviewEmpty')}</p>
             </div>
           )}
           
@@ -335,24 +339,24 @@ function ReportGeneratorSection() {
 
           {showPreview && (
             <div className="animate-fade-in-up" style={{ animation: 'fadeSlideUp 0.8s ease-out both' }}>
-              <div className="absolute top-4 right-4 rounded-full px-3 py-1 text-[9px] sm:text-[10px] font-medium tracking-wider z-10 bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]">PREVIEW LISTO</div>
+              <div className="absolute top-4 right-4 rounded-full px-3 py-1 text-[9px] sm:text-[10px] font-medium tracking-wider z-10 bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]">{t('insightai.repPreviewBadge')}</div>
               <div className="rounded-lg p-5 sm:p-7 flex flex-col gap-3.5 text-[#1a1a2e] bg-white/90 min-h-[380px] shadow-[0_0_30px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/30">
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3">
                   <span className="text-sm font-medium">📊 InsightAI</span>
-                  <span className="text-[10px] text-gray-500">Junio 2026</span>
+                  <span className="text-[10px] text-gray-500">{t("insight.june2026")}</span>
                 </div>
-                <h4 className="text-lg font-medium text-gray-900 m-0">Reporte de Ventas — Junio 2026</h4>
-                <p className="text-[11px] text-gray-600 leading-relaxed m-0">Las ventas totales del mes alcanzaron $847,320 MXN (+12.3% vs mes anterior). El producto estrella fue Laptop Pro X1 con 245 unidades.</p>
+                <h4 className="text-lg font-medium text-gray-900 m-0">{t('insightai.repPreviewTitle')}</h4>
+                <p className="text-[11px] text-gray-600 leading-relaxed m-0">{t('insightai.repPreviewDesc')}</p>
                 <div className="bg-gray-50 rounded-lg p-3.5 h-24 flex items-center justify-center border border-gray-200">
                   <ResponsiveContainer width="100%" height={80}>
                     <AreaChart data={ingresosData}><defs><linearGradient id="gradPreview2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={0.3} /><stop offset="100%" stopColor="#3B82F6" stopOpacity={0} /></linearGradient></defs><Area type="monotone" dataKey="ingresos" stroke="#3B82F6" strokeWidth={1.5} fill="url(#gradPreview2)" /></AreaChart>
                   </ResponsiveContainer>
                 </div>
                 <table className="w-full text-[10px]">
-                  <thead><tr className="border-b border-gray-200">{['Producto', 'Unidades', 'Ingreso'].map(h => <th key={h} className="text-left py-1.5 text-gray-500 font-normal">{h}</th>)}</tr></thead>
+                  <thead><tr className="border-b border-gray-200">{[t('insightai.repHead1'), t('insightai.repHead2'), t('insightai.repHead3')].map(h => <th key={h} className="text-left py-1.5 text-gray-500 font-normal">{h}</th>)}</tr></thead>
                   <tbody>{topProductosData.slice(0, 3).map((p, i) => <tr key={i} className="border-b border-gray-100"><td className="py-1.5 text-gray-900">{p.nombre}</td><td className="py-1.5 text-gray-600">{p.ventas}</td><td className="py-1.5 text-gray-600">${(p.ventas * 3400).toLocaleString()}</td></tr>)}</tbody>
                 </table>
-                <div className="mt-auto border-t border-gray-200 pt-2.5 flex justify-between text-[9px] text-gray-400"><span>Generado por InsightAI</span><span>Página 1 de 3</span></div>
+                <div className="mt-auto border-t border-gray-200 pt-2.5 flex justify-between text-[9px] text-gray-400"><span>{t('insightai.repFooter1')}</span><span>{t('insightai.repFooter2')}</span></div>
               </div>
             </div>
           )}
@@ -366,6 +370,11 @@ function ReportGeneratorSection() {
    COMPONENTE PRINCIPAL — ALL IN ONE / MOBILE FIRST
    ============================================================ */
 export default function InsightAIDemo({ onClose }) {
+  const { t, i18n } = useTranslation();
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language.startsWith('es') ? 'en' : 'es');
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -373,8 +382,8 @@ export default function InsightAIDemo({ onClose }) {
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'ai',
-      text: '¡Hola! Soy InsightAI, tu CFO virtual. Para que veas la magia en acción, te invito a probar los botones de **acciones rápidas** abajo, o puedes escribir tu propia consulta.\n\nDescubre cómo genero gráficos y tablas dinámicas en segundos basándome en tus datos.',
-      analysis: 'Conexión a PostgreSQL establecida con éxito. Listo para procesar consultas.',
+      text: t('insightai.aiWelcome'),
+      analysis: t('insightai.aiWelcomeAnalysis'),
       showMiniChart: false,
       showClientTable: false,
     }
@@ -385,15 +394,29 @@ export default function InsightAIDemo({ onClose }) {
   const [showExpandedInsight, setShowExpandedInsight] = useState(false);
   
   const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncText, setLastSyncText] = useState('Sincronizado hace 5 min');
+  const [lastSyncText, setLastSyncText] = useState(t('insightai.syncOld'));
   const [showSchema, setShowSchema] = useState(false);
+
+  useEffect(() => {
+    setChatMessages([
+      {
+        role: 'ai',
+        text: t('insightai.aiWelcome'),
+        analysis: t('insightai.aiWelcomeAnalysis'),
+        showMiniChart: false,
+        showClientTable: false,
+      }
+    ]);
+    setHistory([]);
+    setLastSyncText(t('insightai.syncOld'));
+  }, [i18n.language, t]);
 
   const handleResync = () => {
     setIsSyncing(true);
-    setLastSyncText('Sincronizando metadata...');
+    setLastSyncText(t('insightai.syncLoading'));
     setTimeout(() => {
       setIsSyncing(false);
-      setLastSyncText('Sincronizado justo ahora');
+      setLastSyncText(t('insightai.syncDone'));
     }, 1500);
   };
 
@@ -430,15 +453,15 @@ export default function InsightAIDemo({ onClose }) {
     
     const newMessages = [...chatMessages, { role: 'user', text: trimmed }];
     setChatMessages(newMessages);
-    setHistory([{ pregunta: trimmed, fecha: 'Justo ahora' }, ...history]);
+    setHistory([{ pregunta: trimmed, fecha: t('insightai.justNow') }, ...history]);
     setChatInput('');
     setIsAiLoading(true);
 
     setTimeout(() => {
       let aiResponse = {
         role: 'ai',
-        text: 'Esta es una demostración interactiva. En un entorno de producción, **InsightAI** se conectará directamente a tu Base de Datos para analizar esta consulta personalizada y generar reportes financieros en tiempo real.',
-        analysis: 'Modo Demo Activo. Conexión a base de datos del cliente requerida para consultas personalizadas.',
+        text: t('insightai.aiDemo'),
+        analysis: t('insightai.aiDemoAnalysis'),
         showMiniChart: false,
         showClientTable: false,
       };
@@ -447,22 +470,22 @@ export default function InsightAIDemo({ onClose }) {
       if (lower.includes('top productos')) {
         aiResponse = {
           role: 'ai',
-          text: 'Aquí están los 3 productos más vendidos de la semana. **Laptop Pro X1** sigue liderando con fuerza.',
-          analysis: 'Query ejecutado: SELECT nombre, ventas FROM productos ORDER BY ventas DESC LIMIT 3',
+          text: t('insightai.aiTopProducts'),
+          analysis: t('insightai.aiTopProductsAnalysis'),
           showMiniChart: true,
         };
       } else if (lower.includes('clientes') || lower.includes('churn')) {
         aiResponse = {
           role: 'ai',
-          text: 'Atención: he detectado 3 clientes corporativos con un patrón de compras decreciente que indica riesgo de abandono (churn).',
-          analysis: 'Algoritmo predictivo de Churn Risk (XGBoost) detectó anomalías en la frecuencia de órdenes.',
+          text: t('insightai.aiChurn'),
+          analysis: t('insightai.aiChurnAnalysis'),
           showClientTable: true,
         };
       } else if (lower.includes('ventas por día') || lower.includes('comparar')) {
         aiResponse = {
           role: 'ai',
-          text: 'Las ventas se han mantenido sólidas, mostrando un crecimiento del **+12.3%** comparado con el mes anterior.',
-          analysis: 'Cálculo de delta mes a mes completado sobre la serie temporal de ingresos.',
+          text: t('insightai.aiSales'),
+          analysis: t('insightai.aiSalesAnalysis'),
         };
       }
 
@@ -518,9 +541,7 @@ export default function InsightAIDemo({ onClose }) {
               <button
                 onClick={onClose}
                 className="mr-2 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-white/5 text-muted text-[12px] font-medium hover:text-text hover:bg-white/10 border border-subtle transition-all"
-              >
-                ← Volver
-              </button>
+              >{t("insight.back")}</button>
             )}
             {onClose && (
               <button
@@ -538,15 +559,21 @@ export default function InsightAIDemo({ onClose }) {
             <span className="text-sm sm:text-base font-medium tracking-tight text-text">
               Insight<span className="font-normal text-blue-400">AI</span>
             </span>
-            <span className="hidden sm:inline text-[11px] sm:text-xs font-normal text-muted">Tu CFO con IA</span>
+            <span className="hidden sm:inline text-[11px] sm:text-xs font-normal text-muted">{t('insightai.cfoSubtitle')}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 z-10">
             <div
               className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-500/10 border border-green-500/20 text-green-400"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-              <span>PostgreSQL — Q1 2026</span>
+              <span>{t('insightai.headerStatus')}</span>
             </div>
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-500/20 bg-white/5 text-xs font-medium text-blue-400 hover:text-white hover:border-blue-500/40 transition-colors"
+            >
+              {i18n.language.startsWith('es') ? 'EN' : 'ES'}
+            </button>
             <div
               className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium text-white shadow-lg shadow-blue-500/20"
               style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
@@ -580,16 +607,16 @@ export default function InsightAIDemo({ onClose }) {
           <div className="relative z-10 max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-medium mb-6 animate-fade-in">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-              Tu CFO Impulsado por IA
+              {t('insightai.heroBadge')}
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-text mb-4 tracking-tight leading-tight animate-fade-in delay-100">
-              Decisiones estratégicas con{' '}
+              {t('insightai.heroTitle1')}{' '}
               <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                datos en tiempo real
+                {t('insightai.heroTitle2')}
               </span>
             </h1>
             <p className="text-[15px] sm:text-[16px] font-normal text-muted max-w-xl mx-auto mb-8 animate-fade-in delay-200">
-              Conecta tus bases de datos en minutos, analiza métricas clave y genera reportes ejecutivos interactuando directamente en lenguaje natural.
+              {t('insightai.heroDesc')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center animate-fade-in delay-300">
               <button
@@ -597,14 +624,14 @@ export default function InsightAIDemo({ onClose }) {
                 className="px-5 py-2.5 rounded-[8px] bg-blue-500 text-white text-[13px] font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)]"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                Ver Demo en vivo
+                {t('insightai.btnLive')}
               </button>
               <button
                 onClick={() => document.getElementById('chat-section')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-5 py-2.5 rounded-[8px] border border-blue-500/30 text-blue-400 text-[13px] font-medium hover:bg-blue-500/10 transition-colors flex items-center gap-2 justify-center"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
-                Consultar a la IA
+                {t('insightai.btnAi')}
               </button>
             </div>
           </div>
@@ -620,12 +647,12 @@ export default function InsightAIDemo({ onClose }) {
 
           {/* ===== SECCIÓN 1: DASHBOARD ===== */}
           <section className="animate-fade-in">
-            <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">Dashboard Ejecutivo</h2>
+            <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">{t('insightai.dashTitle')}</h2>
 
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {kpiData.map((kpi, i) => (
-                <KpiCard key={i} {...kpi} delay={i * 0.08} />
+                <KpiCard key={i} {...kpi} label={t(kpi.label)} subtitle={t(kpi.subtitle)} delay={i * 0.08} />
               ))}
             </div>
 
@@ -633,7 +660,7 @@ export default function InsightAIDemo({ onClose }) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {/* Ingresos */}
               <div className="rounded-xl p-4 sm:p-5 bg-white/5 backdrop-blur-xl border border-subtle">
-                <span className="text-sm sm:text-base font-medium block mb-3 text-text">Ingresos últimos 6 meses</span>
+                <span className="text-sm sm:text-base font-medium block mb-3 text-text">{t('insightai.chart1Title')}</span>
                 <ResponsiveContainer width="100%" height={200}>
                   <AreaChart data={ingresosData}>
                     <defs>
@@ -653,7 +680,7 @@ export default function InsightAIDemo({ onClose }) {
 
               {/* Top productos */}
               <div className="rounded-xl p-4 sm:p-5 bg-white/5 backdrop-blur-xl border border-subtle">
-                <span className="text-sm sm:text-base font-medium block mb-3 text-text">Top 5 productos por venta</span>
+                <span className="text-sm sm:text-base font-medium block mb-3 text-text">{t('insightai.chart2Title')}</span>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={topProductosData} layout="vertical" margin={{ left: 10, right: 10 }}>
                     <CartesianGrid stroke="rgba(59,130,246,0.06)" strokeDasharray="3 3" horizontal vertical={false} />
@@ -669,14 +696,14 @@ export default function InsightAIDemo({ onClose }) {
             {/* Tabla transacciones */}
             <div className="rounded-xl p-4 sm:p-5 table-responsive bg-white/5 backdrop-blur-xl border border-subtle">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm sm:text-base font-medium text-text">Últimas transacciones</span>
-                <span className="text-[10px] sm:text-xs font-normal text-muted">5 de 1,847</span>
+                <span className="text-sm sm:text-base font-medium text-text">{t('insightai.tableTitle')}</span>
+                <span className="text-[10px] sm:text-xs font-normal text-muted">{t('insightai.tableSubtitle')}</span>
               </div>
               <div className="overflow-x-auto scrollbar-hide">
                 <table className="w-full text-left min-w-[600px]">
                   <thead>
                     <tr className="border-b border-subtle">
-                      {['ID', 'Cliente', 'Producto', 'Monto', 'Status', 'Fecha'].map(h => (
+                      {[t('insightai.tableId'), t('insightai.tableClient'), t('insightai.tableProduct'), t('insightai.tableAmount'), t('insightai.tableStatus'), t('insightai.tableDate')].map(h => (
                         <th key={h} className="text-[10px] sm:text-xs font-medium uppercase tracking-wider px-2 sm:px-3 py-2 text-muted">{h}</th>
                       ))}
                     </tr>
@@ -697,12 +724,12 @@ export default function InsightAIDemo({ onClose }) {
               </div>
               {/* Paginación */}
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-subtle">
-                <span className="text-[10px] sm:text-xs font-normal text-muted">Página 1 de 370</span>
+                <span className="text-[10px] sm:text-xs font-normal text-muted">{t('insightai.tablePage')}</span>
                 <div className="flex gap-1.5 sm:gap-2">
-                  <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-white/5 text-muted border border-subtle hover:text-text hover:bg-white/10 transition-colors">Anterior</button>
+                  <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-white/5 text-muted border border-subtle hover:text-text hover:bg-white/10 transition-colors">{t('insightai.btnPrev')}</button>
                   <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-blue-500 text-white border border-transparent shadow-[0_0_10px_rgba(59,130,246,0.3)]">1</button>
                   <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-white/5 text-muted border border-subtle hover:text-text hover:bg-white/10 transition-colors">2</button>
-                  <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-white/5 text-muted border border-subtle hover:text-text hover:bg-white/10 transition-colors">Siguiente</button>
+                  <button className="text-[10px] sm:text-xs font-medium px-2.5 py-1.5 rounded-md bg-white/5 text-muted border border-subtle hover:text-text hover:bg-white/10 transition-colors">{t('insightai.btnNext')}</button>
                 </div>
               </div>
             </div>
@@ -710,7 +737,7 @@ export default function InsightAIDemo({ onClose }) {
 
           {/* ===== SECCIÓN 2: CHAT IA ===== */}
           <section id="chat-section" className="animate-fade-in delay-100">
-            <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">Chat IA — Consultas en Lenguaje Natural</h2>
+            <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">{t('insightai.chatTitle')}</h2>
             <div className="flex flex-col lg:flex-row gap-0 rounded-xl overflow-hidden bg-white/5 backdrop-blur-xl border border-subtle shadow-xl h-[500px] max-h-[65vh] lg:h-[600px] lg:max-h-[70vh]">
               {/* Sidebar historial (escritorio) */}
               <div className="hidden lg:flex lg:flex-col lg:w-64 lg:min-w-[256px] p-4 gap-1 border-r border-subtle bg-black/20">
@@ -718,13 +745,13 @@ export default function InsightAIDemo({ onClose }) {
                   className="text-sm font-medium rounded-lg py-2.5 px-4 mb-3 transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
                   onClick={() => setChatMessages([{
                     role: 'ai',
-                    text: '¿En qué más te puedo ayudar? Prueba con otra de las acciones rápidas.',
-                    analysis: 'Lista para una nueva consulta.'
+                    text: t('insightai.moreHelp'),
+                    analysis: t('insightai.newQueryReady')
                   }])}
-                >+ Nueva consulta</button>
-                <span className="text-[10px] font-medium uppercase tracking-wider px-1 mb-1 text-muted">Historial</span>
+                >{t('insightai.btnNewQuery')}</button>
+                <span className="text-[10px] font-medium uppercase tracking-wider px-1 mb-1 text-muted">{t('insightai.chatHistory')}</span>
                 {history.length === 0 ? (
-                  <span className="text-xs px-1 text-muted italic">Aún no hay consultas</span>
+                  <span className="text-xs px-1 text-muted italic">{t('insightai.chatHistoryEmpty')}</span>
                 ) : (
                   history.map((item, i) => (
                     <div key={i} className={`rounded-lg px-3 py-2.5 cursor-pointer transition-colors duration-150 hover:bg-white/10 ${i === 0 ? 'bg-blue-500/10 text-blue-400' : 'bg-transparent text-text'}`}>
@@ -759,7 +786,7 @@ export default function InsightAIDemo({ onClose }) {
                           </div>
                           {msg.showMiniChart && (
                             <div className="ml-10 rounded-lg p-3 sm:p-4 bg-black/20 border border-subtle">
-                              <span className="text-[10px] sm:text-xs font-medium block mb-2 text-muted">Top 3 productos — Esta semana</span>
+                              <span className="text-[10px] sm:text-xs font-medium block mb-2 text-muted">{t('insightai.miniChartTitle')}</span>
                               <ResponsiveContainer width="100%" height={90}>
                                 <BarChart data={top3Semana}>
                                   <XAxis dataKey="nombre" tick={{ fill: '#8B95B0', fontSize: 10, fontWeight: 400 }} axisLine={false} tickLine={false} />
@@ -771,7 +798,7 @@ export default function InsightAIDemo({ onClose }) {
                           )}
                           {msg.showClientTable && (
                             <div className="ml-10 rounded-lg p-3 sm:p-4 bg-red-500/5 border border-red-500/20">
-                              <span className="text-[10px] sm:text-xs font-medium block mb-2 text-red-400">⚠ Clientes en riesgo de churn</span>
+                              <span className="text-[10px] sm:text-xs font-medium block mb-2 text-red-400">{t('insightai.miniTableTitle')}</span>
                               {[{ nombre: 'CorpTech SA', score: 87 }, { nombre: 'InnovaMex', score: 72 }, { nombre: 'DataFlow', score: 68 }].map((c, j) => (
                                 <div key={j} className={`flex justify-between py-1.5 ${j < 2 ? 'border-b border-red-500/10' : ''}`}>
                                   <span className="text-xs sm:text-sm font-medium text-text">{c.nombre}</span>
@@ -799,16 +826,16 @@ export default function InsightAIDemo({ onClose }) {
 
                 {/* Input bar */}
                 <div className="p-4 sm:p-5 bg-black/20 border-t border-subtle backdrop-blur-md">
-                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-2 text-muted">Acciones rápidas</span>
+                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-2 text-muted">{t('insightai.chatQuickActions')}</span>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {['Top productos', 'Ventas por día', 'Clientes nuevos', 'Comparar períodos'].map(chip => (
+                    {[t('insightai.chatQA1'), t('insightai.chatQA2'), t('insightai.chatQA3'), t('insightai.chatQA4')].map(chip => (
                       <button key={chip} onClick={() => handleSendMessage(chip)} className="text-[10px] sm:text-xs font-medium rounded-full px-3 py-1.5 transition-all duration-200 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20">{chip}</button>
                     ))}
                   </div>
                   <div className="flex gap-2 items-center">
                     <input
                       type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                      placeholder="Pregúntale a tus datos..."
+                      placeholder={t('insightai.chatInputPlaceholder')}
                       className="flex-1 text-sm sm:text-base font-normal rounded-xl px-4 py-3 outline-none bg-black/20 border border-subtle text-text focus:border-blue-500/50 focus:bg-black/40 transition-all placeholder:text-muted"
                     />
                     <button
@@ -818,7 +845,7 @@ export default function InsightAIDemo({ onClose }) {
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9L16 2L9 16L7.5 10.5L2 9Z" fill="currentColor" /></svg>
                     </button>
                   </div>
-                  <p className="text-[9px] sm:text-[10px] font-normal text-center mt-2.5 text-muted">GPT-4o · LangChain SQL Agent · Conectado a PostgreSQL</p>
+                  <p className="text-[9px] sm:text-[10px] font-normal text-center mt-2.5 text-muted">{t('insightai.chatFooter')}</p>
                 </div>
               </div>
             </div>
@@ -828,27 +855,27 @@ export default function InsightAIDemo({ onClose }) {
                 onClick={handleShowInsight}
                 className="text-xs sm:text-sm font-medium rounded-lg px-4 py-2.5 transition-all duration-200 bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20"
               >
-                Ver insight interactivo completo ↓
+                {t('insightai.btnFullInsight')}
               </button>
             </div>
           </section>
 
           {/* ===== SECCIÓN 3: CONECTORES ===== */}
           <section className="animate-fade-in delay-200">
-            <h2 className="text-lg sm:text-xl font-medium mb-1 sm:mb-1.5 text-text">Conecta tus fuentes de datos</h2>
-            <p className="text-xs sm:text-sm font-normal mb-5 sm:mb-6 text-muted">InsightAI se conecta a cualquier DB en menos de 2 minutos</p>
+            <h2 className="text-lg sm:text-xl font-medium mb-1 sm:mb-1.5 text-text">{t('insightai.connTitle')}</h2>
+            <p className="text-xs sm:text-sm font-normal mb-5 sm:mb-6 text-muted">{t('insightai.connSub')}</p>
 
-            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">Bases de datos relacionales</span>
+            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">{t('insightai.connRel')}</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               {conectoresRelacionales.map((c, i) => <ConnectorCard key={i} {...c} />)}
             </div>
 
-            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">Cloud databases</span>
+            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">{t('insightai.connCloud')}</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               {conectoresCloud.map((c, i) => <ConnectorCard key={i} {...c} />)}
             </div>
 
-            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">Archivos y hojas de cálculo</span>
+            <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-3 text-muted">{t('insightai.connFiles')}</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
               {conectoresArchivos.map((c, i) => <ConnectorCard key={i} {...c} />)}
             </div>
@@ -858,16 +885,16 @@ export default function InsightAIDemo({ onClose }) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2.5">
                   <span className={`w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] ${isSyncing ? 'animate-pulse' : ''}`} />
-                  <span className="text-sm sm:text-base font-medium text-text">Conexión activa: PostgreSQL</span>
+                  <span className="text-sm sm:text-base font-medium text-text">{t('insightai.connActive')}</span>
                 </div>
                 <span className={`text-[10px] sm:text-xs font-normal ${isSyncing ? 'text-blue-400 animate-pulse' : 'text-muted'}`}>{lastSyncText}</span>
               </div>
               <p className="text-[11px] sm:text-xs text-muted mb-4 leading-relaxed max-w-3xl">
-                InsightAI está analizando esta base de datos en tiempo real. Todas las consultas que realices en el chat utilizarán inteligencia artificial para convertir tu lenguaje natural en queries SQL, consultando directamente estas tablas de forma segura.
+                {t('insightai.connDesc')}
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
-                {[{ label: 'Host', value: 'db.insightai-prod.com', icon: '🌐' }, { label: 'Base de datos', value: 'ventas_q1_2026', icon: '🗄️' }, { label: 'Tablas detectadas', value: '8 tablas', icon: '📋' }].map((item, i) => (
+                {[{ label: t('insightai.connHost'), value: 'db.insightai-prod.com', icon: '🌐' }, { label: t('insightai.connDb'), value: 'ventas_q1_2026', icon: '🗄️' }, { label: t('insightai.connTables'), value: t('insightai.valTables'), icon: '📋' }].map((item, i) => (
                   <div key={i} className="rounded-lg p-3 sm:p-4 bg-black/20 border border-subtle flex flex-col hover:bg-black/40 transition-colors">
                     <div className="flex items-center gap-1.5 mb-1">
                       <span className="text-xs">{item.icon}</span>
@@ -884,23 +911,23 @@ export default function InsightAIDemo({ onClose }) {
                   className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-all shadow-[0_0_10px_rgba(59,130,246,0.2)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isSyncing ? (
-                    <><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"/> Actualizando...</>
-                  ) : 'Resincronizar'}
+                    <><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"/> {t('insightai.btnUpdating')}</>
+                  ) : t('insightai.btnResync')}
                 </button>
                 <button 
                   onClick={() => setShowSchema(!showSchema)}
                   className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 transition-colors flex items-center gap-2"
                 >
-                  {showSchema ? 'Ocultar esquema' : 'Ver esquema'}
+                  {showSchema ? t('insightai.btnHideSchema') : t('insightai.btnShowSchema')}
                   <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`transition-transform duration-200 ${showSchema ? 'rotate-180' : ''}`}><path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
 
               {showSchema && (
                 <div className="mt-5 pt-4 border-t border-white/5 animate-fade-in" style={{ animation: 'fadeSlideUp 0.3s ease-out both' }}>
-                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-3 text-muted">Esquema de tablas detectadas</span>
+                  <span className="text-[10px] font-medium uppercase tracking-wider block mb-3 text-muted">{t('insightai.schemaDetected')}</span>
                   <div className="flex flex-wrap gap-2">
-                    {['productos', 'ventas', 'clientes', 'transacciones', 'inventario', 'sucursales', 'usuarios', 'categorias'].map(tabla => (
+                    {[t('insightai.schemaT1'), t('insightai.schemaT2'), t('insightai.schemaT3'), t('insightai.schemaT4'), t('insightai.schemaT5'), t('insightai.schemaT6'), t('insightai.schemaT7'), t('insightai.schemaT8')].map(tabla => (
                       <div key={tabla} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/5 text-[11px] sm:text-xs text-text hover:bg-white/5 hover:border-blue-500/30 transition-colors cursor-default">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
                         {tabla}
@@ -918,17 +945,16 @@ export default function InsightAIDemo({ onClose }) {
           {/* ===== SECCIÓN 5: INSIGHT EXPANDIDO (condicional) ===== */}
           {showExpandedInsight && (
             <section ref={insightRef} className="animate-fade-in delay-100">
-              <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">Insight Expandido</h2>
+              <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6 text-text">{t('insightai.expTitle')}</h2>
               <div className="rounded-xl p-4 sm:p-5 mb-5 bg-blue-500/5 border border-blue-500/20 backdrop-blur-md">
-                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider block mb-1.5 text-blue-300">Consulta original</span>
-                <span className="text-sm sm:text-base font-medium text-blue-100">"¿Cuál fue mi producto más vendido esta semana?"</span>
+                <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider block mb-1.5 text-blue-300">{t('insightai.expOriginal')}</span>
+                <span className="text-sm sm:text-base font-medium text-blue-100">{t('insightai.expQuery')}</span>
               </div>
               <p className="text-sm sm:text-base font-normal leading-relaxed mb-5 text-text">
-                Analizando tu base de datos de ventas para la semana del 18 al 24 de mayo de 2026, identifiqué que{' '}
-                <strong className="font-medium text-blue-400">Laptop Pro X1</strong> fue el producto con mayor volumen, totalizando 47 unidades (+23% vs semana anterior), impulsado por la renovación de equipos de CorpTech SA.
+                <span dangerouslySetInnerHTML={{__html: t('insightai.expDesc')}} />
               </p>
               <div className="rounded-xl p-4 sm:p-5 mb-5 bg-white/5 backdrop-blur-xl border border-subtle">
-                <span className="text-sm sm:text-base font-medium block mb-3 text-text">Ventas diarias — Laptop Pro X1 (Esta semana)</span>
+                <span className="text-sm sm:text-base font-medium block mb-3 text-text">{t('insightai.expChartTitle')}</span>
                 <ResponsiveContainer width="100%" height={250}>
                   <AreaChart data={ventasDiariasData}>
                     <defs><linearGradient id="gradLaptop2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={0.35} /><stop offset="100%" stopColor="#3B82F6" stopOpacity={0} /></linearGradient></defs>
@@ -941,7 +967,7 @@ export default function InsightAIDemo({ onClose }) {
                 </ResponsiveContainer>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
-                {[{ label: 'Unidades vendidas', value: '47', sub: 'Esta semana' }, { label: 'Ingreso generado', value: '$45,830 MXN', sub: 'Precio promedio $975' }, { label: 'Margen bruto', value: '34.2%', sub: '+2.1% vs semana anterior' }].map((m, i) => (
+                {[{ label: t('insightai.expKpi1'), value: '47', sub: t('insightai.expKpi1Sub') }, { label: t('insightai.expKpi2'), value: '$45,830 MXN', sub: t('insightai.expKpi2Sub') }, { label: t('insightai.expKpi3'), value: '34.2%', sub: t('insightai.expKpi3Sub') }].map((m, i) => (
                   <div key={i} className="rounded-xl p-4 sm:p-5 bg-white/5 backdrop-blur-xl border border-subtle">
                     <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider block mb-1.5 text-muted">{m.label}</span>
                     <span className="text-xl sm:text-2xl font-medium block mb-1 text-text">{m.value}</span>
@@ -950,10 +976,10 @@ export default function InsightAIDemo({ onClose }) {
                 ))}
               </div>
               <div className="rounded-xl p-4 sm:p-5 mb-5 table-responsive bg-white/5 backdrop-blur-xl border border-subtle">
-                <span className="text-sm sm:text-base font-medium block mb-3 text-text">Detalle de transacciones</span>
+                <span className="text-sm sm:text-base font-medium block mb-3 text-text">{t('insightai.expTableTitle')}</span>
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full text-left min-w-[550px]">
-                    <thead><tr className="border-b border-subtle">{['Fecha', 'Cliente', 'Cantidad', 'Precio', 'Sucursal'].map(h => <th key={h} className="text-[10px] sm:text-xs font-medium uppercase tracking-wider px-2 sm:px-3 py-2 text-muted">{h}</th>)}</tr></thead>
+                    <thead><tr className="border-b border-subtle">{[t('insightai.expTableHead1'), t('insightai.expTableHead2'), t('insightai.expTableHead3'), t('insightai.expTableHead4'), t('insightai.expTableHead5')].map(h => <th key={h} className="text-[10px] sm:text-xs font-medium uppercase tracking-wider px-2 sm:px-3 py-2 text-muted">{h}</th>)}</tr></thead>
                     <tbody>{detalleTransacciones.map((tx, i) => (
                       <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium text-text">{tx.fecha}</td>
@@ -967,9 +993,9 @@ export default function InsightAIDemo({ onClose }) {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2.5">
-                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.3)]">Exportar CSV</button>
-                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.3)]">Generar PDF</button>
-                <button onClick={() => setShowExpandedInsight(false)} className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-transparent text-blue-400 border border-blue-500/30 hover:bg-blue-500/10 transition-colors">Ocultar</button>
+                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.3)]">{t('insightai.btnCsv')}</button>
+                <button className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_10px_rgba(59,130,246,0.3)]">{t('insightai.btnPdf')}</button>
+                <button onClick={() => setShowExpandedInsight(false)} className="text-xs sm:text-sm font-medium rounded-lg px-4 sm:px-5 py-2.5 bg-transparent text-blue-400 border border-blue-500/30 hover:bg-blue-500/10 transition-colors">{t('insightai.btnHide')}</button>
               </div>
             </section>
           )}
@@ -985,7 +1011,7 @@ export default function InsightAIDemo({ onClose }) {
               <span className="text-[10px] sm:text-xs rounded-full px-2 py-0.5 ml-2 bg-blue-500/10 text-blue-400 border border-blue-500/20">DEMO</span>
             </div>
             <p className="text-xs text-muted">
-              Análisis Predictivo · Business Intelligence · NLP
+              {t('insightai.footerText')}
             </p>
           </div>
         </footer>

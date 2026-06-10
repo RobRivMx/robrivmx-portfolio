@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ParticleBackground from './ParticleBackground';
 
 /* ============================================================
@@ -58,22 +59,22 @@ function useInView(options = {}) {
 
 const documentos = [
   {
-    id: 1, nombre: 'Manual de RR.HH. 2026', categoria: 'Recursos Humanos', paginas: 128, subido: 'Hace 2 días', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#10B981', colorDoc: '#EF4444',
+    id: 1, nombre: 'docbrain.docName1', categoria: 'docbrain.catHR', paginas: 128, subido: 'docbrain.subido1', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#10B981', colorDoc: '#EF4444',
   },
   {
-    id: 2, nombre: 'Contrato Marco de Servicios', categoria: 'Legal', paginas: 45, subido: 'Hace 1 semana', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#F59E0B', colorDoc: '#3B82F6',
+    id: 2, nombre: 'docbrain.docName2', categoria: 'docbrain.catLegal', paginas: 45, subido: 'docbrain.subido2', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#F59E0B', colorDoc: '#3B82F6',
   },
   {
-    id: 3, nombre: 'Política de Seguridad IT', categoria: 'IT & Seguridad', paginas: 23, subido: 'Hace 3 días', estado: 'indexado', progreso: 100, icono: 'docx', colorCat: '#EF4444', colorDoc: '#3B82F6',
+    id: 3, nombre: 'docbrain.docName3', categoria: 'docbrain.catIT', paginas: 23, subido: 'docbrain.subido3', estado: 'indexado', progreso: 100, icono: 'docx', colorCat: '#EF4444', colorDoc: '#3B82F6',
   },
   {
-    id: 4, nombre: 'Catálogo de Productos Q1 2026', categoria: 'Ventas', paginas: 89, subido: 'Hace 5 días', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#3B82F6', colorDoc: '#10B981',
+    id: 4, nombre: 'docbrain.docName4', categoria: 'docbrain.catSales', paginas: 89, subido: 'docbrain.subido4', estado: 'indexado', progreso: 100, icono: 'pdf', colorCat: '#3B82F6', colorDoc: '#10B981',
   },
   {
-    id: 5, nombre: 'Protocolo de Onboarding', categoria: 'Operaciones', paginas: 34, subido: 'Hace 1 hora', estado: 'procesando', progreso: 67, icono: 'docx', colorCat: '#8B5CF6', colorDoc: '#F97316',
+    id: 5, nombre: 'docbrain.docName5', categoria: 'docbrain.catOps', paginas: 34, subido: 'docbrain.subido5', estado: 'procesando', progreso: 67, icono: 'docx', colorCat: '#8B5CF6', colorDoc: '#F97316',
   },
   {
-    id: 6, nombre: 'Código de Conducta 2026', categoria: 'Compliance', paginas: 12, subido: 'Hace 4 días', estado: 'indexado', progreso: 100, icono: 'txt', colorCat: '#14B8A6', colorDoc: '#6B7280',
+    id: 6, nombre: 'docbrain.docName6', categoria: 'docbrain.catComp', paginas: 12, subido: 'docbrain.subido6', estado: 'indexado', progreso: 100, icono: 'txt', colorCat: '#14B8A6', colorDoc: '#6B7280',
   },
 ];
 
@@ -95,43 +96,43 @@ const formatTextWithBold = (text) => {
 
 const prebuiltResponses = {
   'Días de vacaciones': {
-    text: 'Según el Manual de RR.HH. 2026, los empleados tienen derecho a los siguientes días de vacaciones según su antigüedad:',
-    lista: ['1 año: 12 días', '2 años: 14 días', '3 años: 16 días', '4 años: 18 días', '5-9 años: 20 días', '10+ años: 22 días'],
-    cita: { documento: 'Manual de RR.HH. 2026', seccion: 'Capítulo 4 · Página 23', fragmento: '"El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días."', pagina: 23 },
+    text: 'docbrain.q1Text',
+    lista: 'docbrain.q1List',
+    cita: { documento: 'docbrain.docName1', seccion: 'docbrain.q1CitaSec', fragmento: 'docbrain.q1CitaFrag', pagina: 23 },
   },
   'Proceso de onboarding': {
-    text: 'El proceso de onboarding para nuevos empleados consta de 3 fases principales durante el primer mes:',
-    lista: ['Día 1: Bienvenida, entrega de equipo y accesos.', 'Semana 1: Entrenamientos de cultura y herramientas.', 'Mes 1: Proyecto semilla y evaluación 360.'],
-    cita: { documento: 'Protocolo de Onboarding', seccion: 'Fases · Página 5', fragmento: '"El éxito del nuevo talento depende del primer mes. Las tres fases (Día 1, Semana 1, Mes 1) garantizan una inmersión total en la cultura corporativa."', pagina: 5 },
+    text: 'docbrain.q2Text',
+    lista: 'docbrain.q2List',
+    cita: { documento: 'docbrain.docName5', seccion: 'docbrain.q2CitaSec', fragmento: 'docbrain.q2CitaFrag', pagina: 5 },
   },
   'Políticas IT': {
-    text: 'Las políticas de seguridad IT establecen lineamientos estrictos para el uso de equipos corporativos:',
-    lista: ['Prohibido instalar software no aprobado.', 'Bloqueo automático de pantalla tras 5 minutos.', 'Obligatorio el uso de VPN en redes públicas.'],
-    cita: { documento: 'Política de Seguridad IT', seccion: 'Dispositivos · Página 12', fragmento: '"Todo dispositivo asignado debe cumplir con la normativa de seguridad estándar: bloqueo automático (5 min), VPN activa fuera de la oficina y restricción de software de terceros."', pagina: 12 },
+    text: 'docbrain.q3Text',
+    lista: 'docbrain.q3List',
+    cita: { documento: 'docbrain.docName3', seccion: 'docbrain.q3CitaSec', fragmento: 'docbrain.q3CitaFrag', pagina: 12 },
   },
   'Productos disponibles': {
-    text: 'Los productos nuevos incorporados en el catálogo Q1 2026 son:',
-    lista: ['Teclado mecánico RGB v2', 'Monitor curvo 34" 5K', 'Hub USB-C multipuerto'],
-    cita: { documento: 'Catálogo de Productos Q1 2026', seccion: 'Sección 3 · Página 12', fragmento: '"La nueva línea de periféricos incluye el teclado mecánico RGB v2 con switches mejorados, el monitor curvo 34 pulgadas con resolución 5K y el hub USB-C con 7 puertos."', pagina: 12 },
+    text: 'docbrain.q4Text',
+    lista: 'docbrain.q4List',
+    cita: { documento: 'docbrain.docName4', seccion: 'docbrain.q4CitaSec', fragmento: 'docbrain.q4CitaFrag', pagina: 12 },
   }
 };
 
 const estadisticasConsultas = [
-  { dia: 'Lun', consultas: 45 }, { dia: 'Mar', consultas: 62 }, { dia: 'Mié', consultas: 38 },
-  { dia: 'Jue', consultas: 78 }, { dia: 'Vie', consultas: 91 }, { dia: 'Sáb', consultas: 55 }, { dia: 'Dom', consultas: 32 },
+  { dia: 'docbrain.day1', consultas: 45 }, { dia: 'docbrain.day2', consultas: 62 }, { dia: 'docbrain.day3', consultas: 38 },
+  { dia: 'docbrain.day4', consultas: 78 }, { dia: 'docbrain.day5', consultas: 91 }, { dia: 'docbrain.day6', consultas: 55 }, { dia: 'docbrain.day7', consultas: 32 },
 ];
 
 const documentosMasConsultados = [
-  { nombre: 'Manual RR.HH. 2026', porcentaje: 85 },
-  { nombre: 'Contrato Marco', porcentaje: 67 },
-  { nombre: 'Catálogo Q1', porcentaje: 52 },
+  { nombre: 'docbrain.docShort1', porcentaje: 85 },
+  { nombre: 'docbrain.docShort2', porcentaje: 67 },
+  { nombre: 'docbrain.docShort4', porcentaje: 52 },
 ];
 
 const usuariosAcceso = [
-  { nombre: 'Admin (tú)', acceso: 'Acceso total', rol: 'admin' },
-  { nombre: 'Marketing Team', acceso: 'Solo Catálogo Q1', rol: 'limitado' },
-  { nombre: 'RR.HH. Team', acceso: 'Manual + Protocolo', rol: 'limitado' },
-  { nombre: 'Legal Team', acceso: 'Contrato Marco', rol: 'limitado' },
+  { nombre: 'Admin (tú)', acceso: 'docbrain.roleAdmin', rol: 'admin' },
+  { nombre: 'Marketing Team', acceso: 'docbrain.access1', rol: 'limitado' },
+  { nombre: 'RR.HH. Team', acceso: 'docbrain.access2', rol: 'limitado' },
+  { nombre: 'Legal Team', acceso: 'docbrain.docShort2', rol: 'limitado' },
 ];
 
 /* ============================================================
@@ -140,6 +141,7 @@ const usuariosAcceso = [
 
 /** Componente estrella: Cita de documento */
 function CitaDocumento({ documento, seccion, fragmento, pagina, onVerPagina }) {
+  const { t } = useTranslation();
   return (
     <div
       className="rounded-xl p-4 sm:p-5 mt-3 mb-2 relative bg-surface border border-subtle border-l-[3px] border-l-blue-500 animate-fade-in-up"
@@ -159,13 +161,13 @@ function CitaDocumento({ documento, seccion, fragmento, pagina, onVerPagina }) {
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 <path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Fuente verificada ✓
+              {t('docbrain.citeSource')}
             </span>
             <button
               onClick={() => onVerPagina && onVerPagina(documento, pagina)}
               className="text-xs font-medium rounded-lg px-3 py-1.5 transition-colors duration-200 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20"
             >
-              Ver página {pagina} del documento →
+              {t('docbrain.btnViewPage1')} {pagina} {t('docbrain.btnViewPage2')}
             </button>
           </div>
         </div>
@@ -176,6 +178,7 @@ function CitaDocumento({ documento, seccion, fragmento, pagina, onVerPagina }) {
 
 /** Tarjeta de documento con barra de progreso si está procesando */
 function DocumentCard({ doc }) {
+  const { t } = useTranslation();
   const progresoFinal = doc.estado === 'procesando' ? 100 : doc.progreso;
   // Animación de progreso
   const [progresoAnim, setProgresoAnim] = useState(doc.progreso);
@@ -194,9 +197,9 @@ function DocumentCard({ doc }) {
         <div className="flex items-center gap-2.5">
           <span className="text-2xl" style={{ color: doc.colorDoc }}>{doc.icono === 'pdf' ? '📕' : doc.icono === 'docx' ? '📘' : '📄'}</span>
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm sm:text-base font-medium text-text">{doc.nombre}</span>
+            <span className="text-sm sm:text-base font-medium text-text">{t(doc.nombre)}</span>
             <span className="text-[10px] sm:text-xs font-medium rounded-full px-2 py-0.5 inline-block w-fit" style={{ background: `${doc.colorCat}20`, color: doc.colorCat }}>
-              {doc.categoria}
+              {t(doc.categoria)}
             </span>
           </div>
         </div>
@@ -205,13 +208,13 @@ function DocumentCard({ doc }) {
         ) : (
           <span className="flex items-center gap-1.5 text-xs text-amber-500">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            Procesando
+            {t('docbrain.docProcessing')}
           </span>
         )}
       </div>
       <div className="flex items-center justify-between text-xs text-muted">
-        <span>{doc.paginas} páginas</span>
-        <span>{doc.subido}</span>
+        <span>{doc.paginas} {t('docbrain.docPages')}</span>
+        <span>{t(doc.subido)}</span>
       </div>
       {doc.estado === 'procesando' && (
         <div className="w-full bg-black/30 rounded-full h-1.5 overflow-hidden">
@@ -227,6 +230,7 @@ function DocumentCard({ doc }) {
 
 /** Zona de upload drag & drop */
 function UploadZone() {
+  const { t } = useTranslation();
   const [hover, setHover] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -257,10 +261,10 @@ function UploadZone() {
       >
         <div className="text-4xl mb-3">📂</div>
         <h3 className="text-lg sm:text-xl font-medium mb-2 text-text">
-          Suelta aquí tus PDF, Word o TXT
+          {t('docbrain.uploadTitle')}
         </h3>
         <p className="text-sm mb-4 text-muted">
-          o haz clic para seleccionar archivos
+          {t('docbrain.uploadSubtitle')}
         </p>
         <div className="flex flex-wrap justify-center gap-2 mb-5">
           {['PDF', 'DOCX', 'TXT', 'MD', 'XLSX'].map((fmt) => (
@@ -273,7 +277,7 @@ function UploadZone() {
           className="text-sm font-medium rounded-lg px-5 py-2.5 transition-colors duration-200 bg-blue-500 text-white hover:bg-blue-600"
           onClick={handleClick}
         >
-          Seleccionar archivos
+          {t('docbrain.btnSelectFiles')}
         </button>
       </div>
 
@@ -289,37 +293,37 @@ function UploadZone() {
             <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-5">
               <span className="text-2xl">🧠</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-medium text-text mb-3">Carga de Documentos (Demo)</h3>
+            <h3 className="text-xl sm:text-2xl font-medium text-text mb-3">{t('docbrain.uploadModalTitle')}</h3>
             <p className="text-sm text-muted mb-5 leading-relaxed">
-              En un entorno real de producción, al subir un documento, DocBrain ejecuta automáticamente el siguiente pipeline de IA en segundos:
+              {t('docbrain.uploadModalDesc')}
             </p>
             <ol className="text-sm text-muted mb-7 space-y-4">
               <li className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">1</span>
                 <div>
-                  <strong className="text-text block mb-0.5">Extracción y OCR</strong>
-                  <span>Lee el texto de PDFs, documentos Word o escaneos estructurando la información.</span>
+                  <strong className="text-text block mb-0.5">{t('docbrain.step1Title')}</strong>
+                  <span>{t('docbrain.step1Desc')}</span>
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">2</span>
                 <div>
-                  <strong className="text-text block mb-0.5">Chunking Semántico</strong>
-                  <span>Divide el documento inteligentemente conservando el contexto de cada párrafo.</span>
+                  <strong className="text-text block mb-0.5">{t('docbrain.step2Title')}</strong>
+                  <span>{t('docbrain.step2Desc')}</span>
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">3</span>
                 <div>
-                  <strong className="text-text block mb-0.5">Generación de Embeddings</strong>
-                  <span>Convierte los textos en vectores matemáticos usando modelos de IA avanzados.</span>
+                  <strong className="text-text block mb-0.5">{t('docbrain.step3Title')}</strong>
+                  <span>{t('docbrain.step3Desc')}</span>
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center flex-shrink-0 text-xs font-medium">4</span>
                 <div>
-                  <strong className="text-text block mb-0.5">Indexación Vectorial</strong>
-                  <span>Almacena los vectores en una base de datos especializada (ej. pgvector) para búsquedas instantáneas.</span>
+                  <strong className="text-text block mb-0.5">{t('docbrain.step4Title')}</strong>
+                  <span>{t('docbrain.step4Desc')}</span>
                 </div>
               </li>
             </ol>
@@ -328,7 +332,7 @@ function UploadZone() {
                 onClick={() => setShowModal(false)}
                 className="text-sm font-medium rounded-lg px-6 py-2.5 bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)]"
               >
-                Entendido
+                {t('docbrain.btnGotIt')}
               </button>
             </div>
           </div>
@@ -340,6 +344,7 @@ function UploadZone() {
 
 /** Vista previa de documento modal premium */
 function DocViewer({ documento, pagina, onClose }) {
+  const { t } = useTranslation();
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; };
@@ -353,20 +358,20 @@ function DocViewer({ documento, pagina, onClose }) {
       >
         <div className="bg-white/5 backdrop-blur-xl p-5 border-b border-subtle flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-medium text-text">{documento} — Vista previa</h3>
+            <h3 className="text-xl font-medium text-text">{documento} {t('docbrain.viewerPreview')}</h3>
             <div className="flex items-center gap-2 text-sm mt-1 text-muted">
-              <span>Capítulo 4</span>
+              <span>{t("docbrain.chapter4")}</span>
               <span>›</span>
-              <span>Beneficios</span>
+              <span>{t("docbrain.benefits")}</span>
               <span>›</span>
-              <span>Vacaciones</span>
+              <span>{t("docbrain.vacations")}</span>
             </div>
           </div>
           <button
             onClick={onClose}
             className="text-xs font-medium rounded-lg px-3 py-1.5 transition-colors bg-transparent text-muted border border-subtle hover:text-text hover:bg-white/10"
           >
-            Cerrar vista previa
+            {t('docbrain.viewerClose')}
           </button>
         </div>
         
@@ -376,9 +381,7 @@ function DocViewer({ documento, pagina, onClose }) {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
               {' '}
-              <mark className="bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded font-medium">
-                El período vacacional se determina conforme a la Ley Federal del Trabajo, incrementando dos días laborables por cada año subsecuente de servicios, hasta llegar a 22 días.
-              </mark>
+              <mark className="bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded font-medium">{t("docbrain.citation")}</mark>
               {' '}
               Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
             </p>
@@ -390,14 +393,12 @@ function DocViewer({ documento, pagina, onClose }) {
           <div className="flex items-center justify-between">
             <div className="flex gap-3">
               <button className="text-sm font-medium rounded-lg px-4 py-2 bg-white/5 text-text border border-subtle hover:bg-white/10 transition-colors flex items-center gap-2">
-                <span>←</span> Anterior
-              </button>
-              <button className="text-sm font-medium rounded-lg px-4 py-2 bg-white/5 text-text border border-subtle hover:bg-white/10 transition-colors flex items-center gap-2">
-                Siguiente <span>→</span>
+                <span>←</span>{t("docbrain.prev")}</button>
+              <button className="text-sm font-medium rounded-lg px-4 py-2 bg-white/5 text-text border border-subtle hover:bg-white/10 transition-colors flex items-center gap-2">{t("docbrain.next")}<span>→</span>
               </button>
             </div>
             <span className="text-sm font-medium text-muted bg-white/5 px-3 py-1.5 rounded-lg border border-subtle">
-              Página {pagina} de 128
+              {t('docbrain.viewerPage')} {pagina} {t('docbrain.viewerOf')} 128
             </span>
           </div>
         </div>
@@ -456,12 +457,30 @@ function LoadingDots() {
    COMPONENTE PRINCIPAL
    ============================================================ */
 export default function DocBrainDemo({ onClose }) {
+  const { t, i18n } = useTranslation();
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([initialMessage]);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: 'ai',
+      text: t('docbrain.aiWelcome')
+    }
+  ]);
   const [history, setHistory] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showDocViewer, setShowDocViewer] = useState(null); // { documento, pagina }
   const [filtroDocumento, setFiltroDocumento] = useState('todos');
+
+  // Update chat initial message when language changes
+  useEffect(() => {
+    setChatMessages([
+      {
+        role: 'ai',
+        text: t('docbrain.aiWelcome')
+      }
+    ]);
+    setHistory([]);
+  }, [i18n.language, t]);
+
   const [modoBusqueda, setModoBusqueda] = useState('semantica'); // 'exacta' | 'semantica'
   const [numFragmentos, setNumFragmentos] = useState(5);
   const [umbralConfianza, setUmbralConfianza] = useState(85);
@@ -508,20 +527,36 @@ export default function DocBrainDemo({ onClose }) {
     if (!trimmed || isAiLoading) return;
     
     setChatMessages(prev => [...prev, { role: 'user', text: trimmed }]);
-    setHistory(prev => [{ pregunta: trimmed, fecha: 'Justo ahora' }, ...prev]);
+    setHistory(prev => [{ pregunta: trimmed, fecha: t('docbrain.justNow') }, ...prev]);
     setChatInput('');
     setIsAiLoading(true);
     
     setTimeout(() => {
-      let aiResponse = prebuiltResponses[trimmed];
+      let originalKey = trimmed;
+      if (trimmed === t('docbrain.q1')) originalKey = 'Días de vacaciones';
+      if (trimmed === t('docbrain.q2')) originalKey = 'Proceso de onboarding';
+      if (trimmed === t('docbrain.q3')) originalKey = 'Políticas IT';
+      if (trimmed === t('docbrain.q4')) originalKey = 'Productos disponibles';
+
+      let aiResponse = prebuiltResponses[originalKey];
       
       if (!aiResponse) {
          aiResponse = {
            role: 'ai',
-           text: '¡Excelente pregunta! Como esta es una demostración, tus documentos reales aún no están conectados. En un entorno de producción con tu propia cuenta, DocBrain buscaría semánticamente en toda tu base de datos y te daría la respuesta exacta citando la página de referencia.'
+           text: t('docbrain.aiFallback')
          };
       } else {
-         aiResponse = { role: 'ai', ...aiResponse };
+         aiResponse = { 
+           role: 'ai', 
+           text: t(aiResponse.text),
+           lista: t(aiResponse.lista, { returnObjects: true }),
+           cita: {
+             documento: t(aiResponse.cita.documento),
+             seccion: t(aiResponse.cita.seccion),
+             fragmento: t(aiResponse.cita.fragmento),
+             pagina: aiResponse.cita.pagina
+           }
+         };
       }
 
       setChatMessages(prev => [...prev, aiResponse]);
@@ -576,7 +611,7 @@ export default function DocBrainDemo({ onClose }) {
                   onClick={onClose}
                   className="mr-2 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-white/5 text-muted text-[12px] font-medium hover:text-text hover:bg-white/10 border border-subtle transition-all"
                 >
-                  ← Volver
+                  {t('docbrain.backBtn')}
                 </button>
               )}
               <div className="flex items-center gap-2">
@@ -591,9 +626,15 @@ export default function DocBrainDemo({ onClose }) {
               <span className="text-[10px] sm:text-xs rounded-full px-2.5 py-0.5 hidden sm:inline-block bg-blue-500/10 text-blue-400 border border-blue-500/20">DEMO</span>
             </div>
             <div className="flex items-center gap-3 z-10">
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language.startsWith('es') ? 'en' : 'es')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-500/20 bg-white/5 text-xs font-medium text-blue-400 hover:text-white hover:border-blue-500/40 transition-colors"
+              >
+                {i18n.language.startsWith('es') ? 'EN' : 'ES'}
+              </button>
               <span className="hidden md:flex items-center gap-2 text-xs rounded-full px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-                Empresa: TechCorp SA
+                {t('docbrain.companyName')}
               </span>
             </div>
           </header>
@@ -623,29 +664,29 @@ export default function DocBrainDemo({ onClose }) {
 
             <div className="relative z-10 max-w-3xl mx-auto">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-medium mb-6 animate-fade-in">
-                RAG Empresarial — Powered by LlamaIndex
+                {t('docbrain.heroBadge')}
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-text mb-4 tracking-tight leading-tight animate-fade-in delay-100">
-                Tu empresa sabe <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">más de lo que crees</span>
+                {t('docbrain.heroTitle1')} <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{t('docbrain.heroTitle2')}</span>
               </h1>
               <p className="text-xl sm:text-2xl font-medium mb-6 text-blue-400 animate-fade-in delay-200">
-                DocBrain lo encuentra en segundos
+                {t('docbrain.heroSubtitle')}
               </p>
               <p className="text-[15px] sm:text-[16px] font-normal text-muted max-w-xl mx-auto mb-8 animate-fade-in delay-300">
-                Conecta tus manuales, contratos y políticas. Obtén respuestas precisas con la página exacta como fuente. Nunca más buscar en carpetas.
+                {t('docbrain.heroDesc')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center animate-fade-in delay-300">
                 <button
                   onClick={() => document.getElementById('chat')?.scrollIntoView({ behavior: 'smooth' })}
                   className="px-5 py-2.5 rounded-[8px] bg-blue-500 text-white text-[13px] font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)]"
                 >
-                  ▶ Ver demo
+                  {t('docbrain.btnDemo')}
                 </button>
                 <button
                   onClick={() => document.getElementById('biblioteca')?.scrollIntoView({ behavior: 'smooth' })}
                   className="px-5 py-2.5 rounded-[8px] border border-blue-500/30 text-blue-400 text-[13px] font-medium hover:bg-blue-500/10 transition-colors flex items-center gap-2 justify-center"
                 >
-                  📄 Explorar documentos
+                  {t('docbrain.btnExplore')}
                 </button>
               </div>
             </div>
@@ -660,10 +701,10 @@ export default function DocBrainDemo({ onClose }) {
           <section id="metrics" ref={metricsRef} className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { icon: '📚', value: countDocs, label: 'Documentos indexados', suffix: '' },
-                { icon: '📄', value: countPages, label: 'Páginas procesadas', suffix: '' },
-                { icon: '💬', value: countPreguntas, label: 'Preguntas respondidas hoy', suffix: '' },
-                { icon: '🎯', value: countPrecision, label: 'Precisión de respuestas', suffix: '%' },
+                { icon: '📚', value: countDocs, label: t('docbrain.metricsDocs'), suffix: '' },
+                { icon: '📄', value: countPages, label: t('docbrain.metricsPages'), suffix: '' },
+                { icon: '💬', value: countPreguntas, label: t('docbrain.metricsQueries'), suffix: '' },
+                { icon: '🎯', value: countPrecision, label: t('docbrain.metricsAccuracy'), suffix: '%' },
               ].map((metric, idx) => (
                 <div
                   key={idx}
@@ -681,8 +722,8 @@ export default function DocBrainDemo({ onClose }) {
 
           {/* ===== SECCIÓN 3: BIBLIOTECA DE DOCUMENTOS ===== */}
           <section id="biblioteca" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
-            <h2 className="text-2xl sm:text-3xl font-medium mb-2 text-text">Biblioteca de Documentos</h2>
-            <p className="text-sm sm:text-base mb-6 text-muted">Arrastra documentos o haz clic para subir</p>
+            <h2 className="text-2xl sm:text-3xl font-medium mb-2 text-text">{t('docbrain.libTitle')}</h2>
+            <p className="text-sm sm:text-base mb-6 text-muted">{t('docbrain.libSubtitle')}</p>
 
             <div className="mb-6">
               <UploadZone />
@@ -695,23 +736,23 @@ export default function DocBrainDemo({ onClose }) {
             </div>
 
             <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle">
-              <h3 className="text-lg font-medium mb-4 text-text">Almacenamiento</h3>
+              <h3 className="text-lg font-medium mb-4 text-text">{t('docbrain.libStorage')}</h3>
               <ProgressBar value={2.3} max={10} color="#3B82F6" />
               <div className="flex flex-col sm:flex-row justify-between mt-2 text-xs text-muted">
-                <span>2.3 GB de 10 GB usados</span>
-                <span>47 documentos · 3,842 páginas indexadas</span>
+                <span>{t('docbrain.libStorageUsed')}</span>
+                <span>{t('docbrain.libStorageCount')}</span>
               </div>
               <button className="mt-4 text-xs font-medium rounded-lg px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors">
-                Gestionar almacenamiento
+                {t('docbrain.btnManageStorage')}
               </button>
             </div>
           </section>
 
           {/* ===== SECCIÓN 4: CHAT RAG ===== */}
           <section id="chat" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
-            <h2 className="text-2xl sm:text-3xl font-medium mb-2 text-text">Consulta tus Documentos</h2>
+            <h2 className="text-2xl sm:text-3xl font-medium mb-2 text-text">{t('docbrain.chatTitle')}</h2>
             <p className="text-sm sm:text-base mb-6 text-muted">
-              La IA responde solo con información de TUS documentos. Siempre con fuente.
+              {t('docbrain.chatSubtitle')}
             </p>
 
             <div className="flex flex-col lg:flex-row gap-0 rounded-xl overflow-hidden bg-white/5 backdrop-blur-xl border border-subtle h-[600px] max-h-[80vh]">
@@ -721,13 +762,13 @@ export default function DocBrainDemo({ onClose }) {
                   className="text-sm font-medium rounded-lg py-2.5 px-4 bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                   onClick={() => setChatMessages([initialMessage])}
                 >
-                  + Nueva consulta
+                  {t('docbrain.btnNewQuery')}
                 </button>
 
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">Filtrar por documento</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">{t('docbrain.filterDoc')}</span>
                   <div className="flex flex-col gap-1">
-                    {['Todos los documentos', 'Manual RR.HH. 2026', 'Contrato Marco', 'Política Seguridad IT', 'Catálogo Productos'].map((filtro) => (
+                    {['docbrain.filterAll', 'docbrain.docShort1', 'docbrain.docShort2', 'docbrain.docShort3', 'docbrain.docShort5'].map((filtro) => (
                       <button
                         key={filtro}
                         onClick={() => setFiltroDocumento(filtro)}
@@ -737,17 +778,17 @@ export default function DocBrainDemo({ onClose }) {
                         <div className={`w-3.5 h-3.5 flex-shrink-0 rounded-sm flex items-center justify-center transition-colors ${filtroDocumento === filtro ? 'bg-blue-500' : 'bg-black/20 border border-white/20'}`}>
                           {filtroDocumento === filtro && <svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                         </div>
-                        <span className="truncate">{filtro}</span>
+                        <span className="truncate">{t(filtro)}</span>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">Historial</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">{t('docbrain.history')}</span>
                   <div className="flex flex-col gap-1">
                     {history.length === 0 ? (
-                      <span className="text-xs text-muted/60 px-2">Aún no hay consultas</span>
+                      <span className="text-xs text-muted/60 px-2">{t('docbrain.historyEmpty')}</span>
                     ) : (
                       history.map((item, idx) => (
                         <div key={idx} className="rounded-lg px-3 py-2 cursor-pointer hover:bg-white/5 transition-colors">
@@ -809,9 +850,9 @@ export default function DocBrainDemo({ onClose }) {
 
                 {/* Input bar */}
                 <div className="p-4 sm:p-5 border-t border-subtle bg-surface/50">
-                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">Acciones rápidas sugeridas</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted mb-2 block">{t('docbrain.quickActions')}</span>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {['Días de vacaciones', 'Proceso de onboarding', 'Políticas IT', 'Productos disponibles'].map((chip) => (
+                    {[t('docbrain.q1'), t('docbrain.q2'), t('docbrain.q3'), t('docbrain.q4')].map((chip) => (
                       <button
                         key={chip}
                         onClick={() => handleSendMessage(chip)}
@@ -827,7 +868,7 @@ export default function DocBrainDemo({ onClose }) {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                      placeholder="Pregunta algo sobre tus documentos..."
+                      placeholder={t('docbrain.chatPlaceholder')}
                       className="flex-1 text-sm sm:text-base font-medium rounded-xl px-4 py-3 outline-none bg-black/20 border border-subtle text-text focus:border-blue-500/50 transition-colors"
                     />
                     <button
@@ -841,10 +882,10 @@ export default function DocBrainDemo({ onClose }) {
                     </button>
                   </div>
                   <p className="text-[10px] sm:text-xs text-center mt-2.5 text-muted">
-                    DocBrain solo responde con información de tus documentos. Nunca inventa respuestas.
+                    {t('docbrain.chatDisclaimer1')}
                   </p>
                   <p className="text-[10px] sm:text-xs text-center mt-1 text-muted">
-                    LlamaIndex RAG · pgvector · GPT-4o
+                    {t('docbrain.chatDisclaimer2')}
                   </p>
                 </div>
               </div>
@@ -862,17 +903,17 @@ export default function DocBrainDemo({ onClose }) {
 
           {/* ===== SECCIÓN 6: ESTADÍSTICAS DE USO ===== */}
           <section id="stats" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
-            <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text">Actividad de la Biblioteca</h2>
+            <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text">{t('docbrain.statsTitle')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Consultas esta semana */}
               <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-all group">
-                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">Consultas esta semana</h3>
+                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">{t('docbrain.statsQueries')}</h3>
                 <div className="flex items-end gap-1.5 h-24">
                   {estadisticasConsultas.map((dia, idx) => (
                     <div key={idx} className="flex-1 flex flex-col items-center gap-1 justify-end h-full">
                       <div className="w-full flex items-end justify-center group/bar relative h-full">
                         <div className="absolute bottom-[calc(100%+5px)] bg-surface border border-subtle text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg whitespace-nowrap">
-                          {dia.consultas} consultas
+                          {dia.consultas} {t('docbrain.statsQueriesTooltip')}
                         </div>
                         <div
                           className="w-full rounded-sm bg-blue-500/60 group-hover/bar:bg-blue-400 transition-all cursor-pointer relative overflow-hidden"
@@ -881,20 +922,20 @@ export default function DocBrainDemo({ onClose }) {
                           <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/20" />
                         </div>
                       </div>
-                      <span className="text-[10px] text-muted group-hover/bar:text-text transition-colors">{dia.dia}</span>
+                      <span className="text-[10px] text-muted group-hover/bar:text-text transition-colors">{t(dia.dia)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Documentos más consultados */}
+              {/* {t('docbrain.statsMostRead')} */}
               <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-blue-500/30 transition-all">
-                <h3 className="text-sm font-medium mb-3 text-muted">Documentos más consultados</h3>
+                <h3 className="text-sm font-medium mb-3 text-muted">{t("docbrain.mostConsulted")}</h3>
                 <div className="space-y-3">
                   {documentosMasConsultados.map((doc, idx) => (
                     <div key={idx} className="group cursor-pointer">
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-text group-hover:text-blue-300 transition-colors">{doc.nombre}</span>
+                        <span className="text-text group-hover:text-blue-300 transition-colors">{t(doc.nombre)}</span>
                         <span className="text-blue-400 font-medium">{doc.porcentaje}%</span>
                       </div>
                       <ProgressBar value={doc.porcentaje} max={100} color={idx === 0 ? '#3B82F6' : '#60A5FA'} />
@@ -906,12 +947,12 @@ export default function DocBrainDemo({ onClose }) {
               {/* Tiempo respuesta */}
               <div className="rounded-xl p-5 bg-white/5 backdrop-blur-xl border border-subtle hover:border-green-500/30 transition-all group cursor-pointer relative overflow-hidden">
                 <div className="absolute -right-10 -top-10 w-32 h-32 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/10 transition-colors" />
-                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">Tiempo promedio de respuesta</h3>
+                <h3 className="text-sm font-medium mb-3 text-muted group-hover:text-text transition-colors">{t('docbrain.statsTime')}</h3>
                 <div className="flex items-baseline gap-2 relative z-10">
                   <span className="text-4xl font-medium text-text drop-shadow-[0_0_15px_rgba(74,222,128,0.2)]">1.2s</span>
                   <span className="text-sm text-green-400 flex items-center gap-1">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    0.3s vs semana anterior
+                    {t('docbrain.statsTimeCompare')}
                   </span>
                 </div>
                 <div className="mt-4 flex items-center gap-2 relative z-10">
@@ -919,7 +960,7 @@ export default function DocBrainDemo({ onClose }) {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                   </span>
-                  <span className="text-sm text-muted group-hover:text-green-400 transition-colors">Estado del sistema óptimo</span>
+                  <span className="text-sm text-muted group-hover:text-green-400 transition-colors">{t('docbrain.statsSystemStatus')}</span>
                 </div>
               </div>
             </div>
@@ -928,7 +969,7 @@ export default function DocBrainDemo({ onClose }) {
           {/* ===== SECCIÓN 7: ADMINISTRACIÓN ===== */}
           <section id="admin" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-10">
             <h2 className="text-2xl sm:text-3xl font-medium mb-6 text-text flex items-center gap-3">
-              Administración Avanzada
+              {t('docbrain.adminTitle')}
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
@@ -945,15 +986,15 @@ export default function DocBrainDemo({ onClose }) {
                 
                 <h3 className="text-xl font-medium mb-8 text-text flex items-center gap-2">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                  Parámetros del Motor RAG
+                  {t('docbrain.adminRag')}
                 </h3>
                 
                 <div className="space-y-8 relative z-10">
                   {/* Modo de Búsqueda (Pill Switch) */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-text">Algoritmo de Recuperación</p>
-                      <span className="text-[10px] uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">Activo</span>
+                      <p className="text-sm font-medium text-text">{t('docbrain.ragAlg')}</p>
+                      <span className="text-[10px] uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">{t('docbrain.ragAlgActive')}</span>
                     </div>
                     <div className="flex relative bg-black/40 p-1 rounded-xl border border-subtle">
                       <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-blue-600 rounded-lg transition-transform duration-300 ease-out shadow-[0_0_15px_rgba(37,99,235,0.4)] ${modoBusqueda === 'semantica' ? 'translate-x-full left-1' : 'translate-x-0 left-1'}`} />
@@ -961,13 +1002,13 @@ export default function DocBrainDemo({ onClose }) {
                         onClick={() => setModoBusqueda('exacta')}
                         className={`flex-1 relative z-10 text-xs sm:text-sm font-medium py-2.5 transition-colors ${modoBusqueda === 'exacta' ? 'text-white' : 'text-muted hover:text-white'}`}
                       >
-                        Exacta (BM25)
+                        {t('docbrain.ragExact')}
                       </button>
                       <button
                         onClick={() => setModoBusqueda('semantica')}
                         className={`flex-1 relative z-10 text-xs sm:text-sm font-medium py-2.5 transition-colors ${modoBusqueda === 'semantica' ? 'text-white' : 'text-muted hover:text-white'}`}
                       >
-                        Semántica (Vectorial)
+                        {t('docbrain.ragSemantic')}
                       </button>
                     </div>
                   </div>
@@ -975,8 +1016,8 @@ export default function DocBrainDemo({ onClose }) {
                   {/* Fragmentos (Interactive Segments) */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-text">Top-K Fragmentos (Chunks)</p>
-                      <span className="text-xs font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">{numFragmentos} docs</span>
+                      <p className="text-sm font-medium text-text">{t('docbrain.ragChunks')}</p>
+                      <span className="text-xs font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">{numFragmentos} {t('docbrain.ragChunksLabel')}</span>
                     </div>
                     <div className="flex gap-1.5 w-full">
                       {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
@@ -997,7 +1038,7 @@ export default function DocBrainDemo({ onClose }) {
                   {/* Confianza (Glowing Slider) */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-text">Umbral de Similitud (Cosine)</p>
+                      <p className="text-sm font-medium text-text">{t('docbrain.ragThreshold')}</p>
                       <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{umbralConfianza}%</span>
                     </div>
                     <div className="relative pt-2 pb-2">
@@ -1022,8 +1063,8 @@ export default function DocBrainDemo({ onClose }) {
                   </div>
 
                   <div className="mt-8 bg-black/30 border border-subtle rounded-xl p-5 flex flex-col gap-4 relative z-10">
-                    <Toggle label="Forzar Citas de Origen (Footnotes)" checked={citarFuente} onChange={setCitarFuente} />
-                    <Toggle label="Modo Strict RAG (Evitar Alucinaciones)" checked={soloDocumentos} onChange={setSoloDocumentos} />
+                    <Toggle label={t('docbrain.ragToggle1')} checked={citarFuente} onChange={setCitarFuente} />
+                    <Toggle label={t('docbrain.ragToggle2')} checked={soloDocumentos} onChange={setSoloDocumentos} />
                   </div>
                 </div>
               </div>
@@ -1034,7 +1075,7 @@ export default function DocBrainDemo({ onClose }) {
                 
                 <h3 className="text-xl font-medium mb-6 text-text flex items-center gap-2">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                  Control de Acceso y Roles
+                  {t('docbrain.adminRoles')}
                 </h3>
                 
                 <div className="space-y-3 relative z-10 flex-1">
@@ -1052,7 +1093,7 @@ export default function DocBrainDemo({ onClose }) {
                           <p className="text-sm font-medium text-text group-hover/user:text-white transition-colors">{user.nombre}</p>
                           <p className="text-xs text-muted flex items-center gap-1">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            {user.acceso}
+                            {t(user.acceso)}
                           </p>
                         </div>
                       </div>
@@ -1061,7 +1102,7 @@ export default function DocBrainDemo({ onClose }) {
                           ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.1)] group-hover/user:bg-green-500/20'
                           : 'bg-white/5 text-muted border-subtle group-hover/user:border-white/20'
                         }`}>
-                        {user.rol}
+                        {user.rol === 'admin' ? t('docbrain.roleAdmin') : t('docbrain.roleLimit')}
                       </span>
                     </div>
                   ))}
@@ -1073,14 +1114,14 @@ export default function DocBrainDemo({ onClose }) {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
                     </span>
-                    Conexión Segura Activa
+                    {t('docbrain.roleConnection')}
                   </p>
                   <button 
                     onClick={() => setShowDemoModal(true)}
                     className="relative group/btn overflow-hidden text-xs font-medium rounded-lg px-6 py-2.5 bg-blue-600/10 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all shadow-[0_0_15px_rgba(37,99,235,0.15)]"
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                      Gestionar políticas
+                      {t('docbrain.btnManagePolicies')}
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover/btn:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </span>
                   </button>
@@ -1101,7 +1142,7 @@ export default function DocBrainDemo({ onClose }) {
                 <span className="text-[10px] sm:text-xs rounded-full px-2 py-0.5 ml-2 bg-blue-500/10 text-blue-400 border border-blue-500/20">DEMO</span>
               </div>
               <p className="text-xs text-muted">
-                RAG Empresarial con LlamaIndex · pgvector · GPT-4o
+                {t('docbrain.footerText')}
               </p>
             </div>
           </footer>
@@ -1115,16 +1156,14 @@ export default function DocBrainDemo({ onClose }) {
             <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-5 border border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
-            <h3 className="text-xl font-medium text-text mb-2">Función Restringida</h3>
+            <h3 className="text-xl font-medium text-text mb-2">{t('docbrain.demoModalTitle')}</h3>
             <p className="text-sm text-muted mb-6 leading-relaxed">
-              Esta es una demostración interactiva de DocBrain. La gestión avanzada de políticas y roles de acceso requiere conexión a tu base de datos y Active Directory.
+              {t('docbrain.demoModalDesc')}
             </p>
             <button
               onClick={() => setShowDemoModal(false)}
               className="w-full text-sm font-medium rounded-lg px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)]"
-            >
-              Entendido
-            </button>
+            >{t("docbrain.understood")}</button>
           </div>
         </div>
       )}

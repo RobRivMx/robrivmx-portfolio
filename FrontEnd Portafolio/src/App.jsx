@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge, GlowCard, StatCard, Typewriter } from './components/ui/Cards';
 import * as Icon from './components/Icons';
 import ProjectModal from './components/ProjectModal';
@@ -10,84 +11,10 @@ import DocBrainDemo from './components/DocBrainDemo';
 import ParticleBackground from './components/ParticleBackground';
 
 /* ─────────────────────────────────────────────────────
-   Data — proyectos
-───────────────────────────────────────────────────── */
-const PROJECTS = [
-  {
-    id: 'nsl',
-    title: 'Non‑Stop Learning',
-    badge: 'En producción', variant: 'green',
-    icon: <Icon.Zap className="w-5 h-5" />,
-    desc: 'PWA educativa con 9 motores pedagógicos, tutor IA conversacional y gamificación.',
-    stack: ['React', 'FastAPI', 'PostgreSQL', 'OpenAI', 'Whisper', 'Stripe'],
-    metrics: '+15% sesión', link: '#',
-    detail: 'Non‑Stop Learning (NSL) es una plataforma de aprendizaje adaptativo. Con 9 motores pedagógicos y tutor de voz, integra gamificación y pagos con Stripe.',
-    problem: 'Alta tasa de abandono en plataformas tradicionales por falta de personalización y feedback en tiempo real.',
-    solution: 'Arquitectura PWA con procesamiento IA de baja latencia que incrementó la retención y el tiempo de sesión en un 15%.'
-  },
-  {
-    id: 'finance',
-    title: 'Smart Finance Pro',
-    badge: 'En producción', variant: 'green',
-    icon: <Icon.TrendingUp className="w-5 h-5" />,
-    desc: 'Control de gastos con dashboard en tiempo real, categorización automática y metas de ahorro.',
-    stack: ['React', 'FastAPI', 'PostgreSQL', 'Chart.js', 'JWT'],
-    metrics: 'Finanzas claras', link: '#',
-    detail: 'PWA de finanzas personales con dashboards interactivos en tiempo real y categorización que aprende de los patrones del usuario.',
-    problem: 'Falta de visibilidad sobre fugas de capital y la fricción de categorizar gastos manualmente en hojas de cálculo.',
-    solution: 'Dashboard predictivo Zero Trust con categorización automatizada que identifica patrones de gasto al instante.'
-  },
-  {
-    id: 'autoflow',
-    title: 'AutoFlow',
-    badge: '▶ Demo interactiva', 
-    variant: 'blue', 
-    icon: <Icon.Workflow className="w-5 h-5" />,
-    desc: 'Automatización empresarial con n8n e IA, 400+ conectores y reportes inteligentes.',
-    stack: ['React', 'FastAPI', 'n8n', 'IA'], 
-    metrics: '400+ conectores', 
-    link: '/proyectos/autoflow', 
-    isDemo: true, 
-    detail: 'Solución de automatización visual para PyMEs. Combina n8n con IA generativa para reportes ejecutivos.',
-    problem: 'Cuellos de botella operativos en PyMEs por tareas manuales repetitivas y sistemas desconectados entre sí.',
-    solution: 'Ecosistema orquestado con +400 conectores y agentes IA que reducen el trabajo manual rutinario drásticamente.'
-  },
-  {
-    id: 'insightai',
-    title: 'InsightAI',
-    badge: '▶ Demo interactiva', 
-    variant: 'blue', 
-    icon: <Icon.Brain className="w-5 h-5" />,
-    desc: 'Dashboard ejecutivo con consultas en lenguaje natural y visualización automática.',
-    stack: ['React', 'FastAPI', 'LangChain', 'pgvector', 'Recharts', 'OpenAI'],
-    metrics: 'SQL Agent', 
-    link: '/proyectos/insightai', 
-    isDemo: true, 
-    detail: 'Permite a directivos consultar datos empresariales en lenguaje natural. Un SQL Agent traduce la pregunta a SQL.',
-    problem: 'Directivos dependiendo de equipos técnicos para extraer métricas simples, retrasando la toma de decisiones.',
-    solution: 'Interfaz conversacional RAG donde el directivo pregunta en texto plano y obtiene visualizaciones dinámicas al segundo.'
-  },
-  {
-    id: 'docbrain',
-    title: 'DocBrain',
-    badge: '▶ Demo interactiva', 
-    variant: 'blue', 
-    icon: <Icon.Bot className="w-5 h-5" />,
-    desc: 'Chatbot RAG empresarial que razona sobre documentación interna con citas de fuentes.',
-    stack: ['React', 'FastAPI', 'LlamaIndex', 'pgvector', 'PostgreSQL', 'Claude'],
-    metrics: 'RAG avanzado', 
-    link: '/proyectos/docbrain', 
-    isDemo: true, 
-    detail: 'Chatbot corporativo RAG que carga PDFs, Word y Markdown. Los empleados obtienen respuestas con citas a las fuentes.',
-    problem: 'Pérdida de horas productivas buscando políticas, procesos o datos específicos en silos de documentos corporativos.',
-    solution: 'Motor de búsqueda semántica (pgvector + LlamaIndex) que entrega respuestas exactas, citando la página y el documento fuente.'
-  },
-];
-
-/* ─────────────────────────────────────────────────────
    App principal
 ───────────────────────────────────────────────────── */
 export default function App() {
+  const { t, i18n } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchCmd, setSearchCmd] = useState('');
@@ -95,6 +22,79 @@ export default function App() {
   const [activeDemo, setActiveDemo] = useState(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+
+  /* Data — proyectos (se mueve adentro para que reaccione al cambio de idioma) */
+  const PROJECTS = [
+    {
+      id: 'nsl',
+      title: t('projects.list.nsl.title'),
+      badge: t('projects.badges.production'), variant: 'green',
+      icon: <Icon.Zap className="w-5 h-5" />,
+      desc: t('projects.list.nsl.desc'),
+      stack: ['React', 'FastAPI', 'PostgreSQL', 'OpenAI', 'Whisper', 'Stripe'],
+      metrics: t('projects.list.nsl.metrics'), link: '#',
+      detail: t('projects.list.nsl.detail'),
+      problem: t('projects.list.nsl.problem'),
+      solution: t('projects.list.nsl.solution')
+    },
+    {
+      id: 'finance',
+      title: t('projects.list.finance.title'),
+      badge: t('projects.badges.production'), variant: 'green',
+      icon: <Icon.TrendingUp className="w-5 h-5" />,
+      desc: t('projects.list.finance.desc'),
+      stack: ['React', 'FastAPI', 'PostgreSQL', 'Chart.js', 'JWT'],
+      metrics: t('projects.list.finance.metrics'), link: '#',
+      detail: t('projects.list.finance.detail'),
+      problem: t('projects.list.finance.problem'),
+      solution: t('projects.list.finance.solution')
+    },
+    {
+      id: 'autoflow',
+      title: t('projects.list.autoflow.title'),
+      badge: t('projects.badges.demo'), 
+      variant: 'blue', 
+      icon: <Icon.Workflow className="w-5 h-5" />,
+      desc: t('projects.list.autoflow.desc'),
+      stack: ['React', 'FastAPI', 'n8n', 'IA'], 
+      metrics: t('projects.list.autoflow.metrics'), 
+      link: '/proyectos/autoflow', 
+      isDemo: true, 
+      detail: t('projects.list.autoflow.detail'),
+      problem: t('projects.list.autoflow.problem'),
+      solution: t('projects.list.autoflow.solution')
+    },
+    {
+      id: 'insightai',
+      title: t('projects.list.insightai.title'),
+      badge: t('projects.badges.demo'), 
+      variant: 'blue', 
+      icon: <Icon.Brain className="w-5 h-5" />,
+      desc: t('projects.list.insightai.desc'),
+      stack: ['React', 'FastAPI', 'LangChain', 'pgvector', 'Recharts', 'OpenAI'],
+      metrics: t('projects.list.insightai.metrics'), 
+      link: '/proyectos/insightai', 
+      isDemo: true, 
+      detail: t('projects.list.insightai.detail'),
+      problem: t('projects.list.insightai.problem'),
+      solution: t('projects.list.insightai.solution')
+    },
+    {
+      id: 'docbrain',
+      title: t('projects.list.docbrain.title'),
+      badge: t('projects.badges.demo'), 
+      variant: 'blue', 
+      icon: <Icon.Bot className="w-5 h-5" />,
+      desc: t('projects.list.docbrain.desc'),
+      stack: ['React', 'FastAPI', 'LlamaIndex', 'pgvector', 'PostgreSQL', 'Claude'],
+      metrics: t('projects.list.docbrain.metrics'), 
+      link: '/proyectos/docbrain', 
+      isDemo: true, 
+      detail: t('projects.list.docbrain.detail'),
+      problem: t('projects.list.docbrain.problem'),
+      solution: t('projects.list.docbrain.solution')
+    },
+  ];
 
   const handleCopyEmail = (e) => {
     e.preventDefault();
@@ -124,12 +124,17 @@ export default function App() {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  /* Navegación - command */
+  /* Toggle de Idioma */
+  const toggleLanguage = () => {
+    const newLang = i18n.language.startsWith('es') ? 'en' : 'es';
+    i18n.changeLanguage(newLang);
+  };
 
+  /* Navegación - command */
   const NAV_LINKS = [
-    { label: 'Sobre mí', id: 'sobre-mi' },
-    { label: 'Proyectos', id: 'proyectos' },
-    { label: 'Contacto', id: 'contacto' },
+    { label: t('nav.about'), id: 'sobre-mi' },
+    { label: t('nav.projects'), id: 'proyectos' },
+    { label: t('nav.contact'), id: 'contacto' },
   ];
 
   // Si hay una demo activa, suplantamos toda la pantalla
@@ -165,7 +170,7 @@ export default function App() {
               <input
                 autoFocus
                 type="text"
-                placeholder="Buscar sección o proyecto..."
+                placeholder={t('command.searchPlaceholder')}
                 value={searchCmd}
                 onChange={(e) => setSearchCmd(e.target.value)}
                 className="bg-transparent w-full outline-none text-sm font-normal placeholder-muted/50"
@@ -180,7 +185,7 @@ export default function App() {
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-card flex items-center gap-3 text-sm font-medium transition-colors"
                 >
                   <Icon.ChevronRight className="w-4 h-4 text-blue-400" />
-                  Ir a {label}
+                  {t('command.goto')} {label}
                 </button>
               ))}
             </div>
@@ -209,6 +214,16 @@ export default function App() {
                 {label}
               </a>
             ))}
+            
+            {/* Language Toggle Button */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-subtle bg-card text-xs font-medium text-muted hover:text-text hover:border-blue-500/40 transition-all"
+            >
+              <Icon.Globe className="w-3.5 h-3.5" />
+              {i18n.language.startsWith('es') ? 'EN' : 'ES'}
+            </button>
+
             <button
               onClick={() => setCommandOpen(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-subtle bg-card text-xs font-normal text-muted hover:text-text hover:border-blue-500/40 transition-all"
@@ -217,10 +232,19 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Mobile toggle */}
-          <button onClick={() => setMobileMenuOpen((o) => !o)} className="md:hidden p-2 text-muted hover:text-text">
-            {mobileMenuOpen ? <Icon.X /> : <Icon.Menu />}
-          </button>
+          {/* Mobile toggle & Language */}
+          <div className="flex items-center gap-4 md:hidden">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-subtle bg-card text-xs font-medium text-muted hover:text-text"
+            >
+              <Icon.Globe className="w-3.5 h-3.5" />
+              {i18n.language.startsWith('es') ? 'EN' : 'ES'}
+            </button>
+            <button onClick={() => setMobileMenuOpen((o) => !o)} className="p-2 text-muted hover:text-text">
+              {mobileMenuOpen ? <Icon.X /> : <Icon.Menu />}
+            </button>
+          </div>
         </div>
 
         {
@@ -249,20 +273,14 @@ export default function App() {
         {/* Hero */}
         < section id="hero" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 md:pt-36 md:pb-24 text-center" >
           
-          {/* ── Avatar con ondas tecnológicas estilo Google AI ── */}
           <div className="relative mx-auto w-40 h-40 sm:w-48 sm:h-48 mb-10 flex items-center justify-center mt-6">
-            
-            {/* Contenedores de Blobs (CSS nativo) */}
             <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
               <div className="google-blob w-40 h-40 sm:w-52 sm:h-52 bg-blue-500/60" style={{ animationDelay: '0s' }}></div>
               <div className="google-blob w-40 h-40 sm:w-52 sm:h-52 bg-cyan-400/60" style={{ animationDelay: '-2s', animationDirection: 'reverse' }}></div>
               <div className="google-blob w-44 h-44 sm:w-56 sm:h-56 bg-blue-600/50" style={{ animationDelay: '-4s' }}></div>
             </div>
-            
-            {/* Contenedor de la foto con marco radiante */}
             <div className="relative w-full h-full rounded-full p-[3px] bg-gradient-to-br from-blue-400 via-blue-600/50 to-cyan-300 shadow-[0_0_40px_rgba(59,130,246,0.6)] z-10 overflow-hidden group">
               <div className="absolute inset-0 bg-white/20 translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-1000 ease-in-out z-20"></div>
-              
               <img 
                 src={profileImg} 
                 alt="Roberto Rivera" 
@@ -272,14 +290,14 @@ export default function App() {
           </div>
 
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-blue-500/20 text-blue-400 text-sm font-medium mb-8 animate-float">
-            <Icon.Cpu className="w-4 h-4" /> Lead Full Stack Architect
+            <Icon.Cpu className="w-4 h-4" /> {t('hero.role')}
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-[1.05] mb-6">
-            <Typewriter text="Código que impacta." /><br />
-            <span className="text-blue-400">Arquitectura que escala.</span>
+            <Typewriter text={t('hero.title1')} /><br />
+            <span className="text-blue-400">{t('hero.title2')}</span>
           </h1>
           <p className="text-lg sm:text-xl font-normal text-muted mb-10 max-w-2xl mx-auto">
-            React · Python · FastAPI · IA Generativa · Zero Trust
+            {t('hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
@@ -287,7 +305,7 @@ export default function App() {
               onClick={(e) => scrollTo(e, 'proyectos')}
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-card bg-blue-500 text-text font-medium hover:bg-blue-600 active:scale-95 transition-all shadow-[0_8px_24px_rgba(59,130,246,0.25)]"
             >
-              Ver proyectos <Icon.ChevronRight />
+              {t('hero.viewProjects')} <Icon.ChevronRight />
             </a>
 
             <a
@@ -295,7 +313,7 @@ export default function App() {
               onClick={(e) => scrollTo(e, 'contacto')}
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-card border border-blue-500/30 text-text font-medium hover:border-blue-500/60 hover:bg-card active:scale-95 transition-all"
             >
-              <Icon.Mail /> Contactar
+              <Icon.Mail /> {t('hero.contact')}
             </a >
           </div >
         </section >
@@ -304,21 +322,20 @@ export default function App() {
         < section id="sobre-mi" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24" >
           <div className="flex items-center gap-3 mb-8">
             <Icon.Sparkles className="w-6 h-6 text-blue-400" />
-            <h2 className="text-2xl font-medium">Sobre mí</h2>
+            <h2 className="text-2xl font-medium">{t('about.title')}</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
               <p className="text-base font-normal text-muted leading-relaxed">
-                Lead Full Stack Architect con más de 8 años creando productos digitales de alto impacto.
-                Especializado en PWAs, arquitecturas serverless, Zero Trust e inteligencia artificial generativa.
+                {t('about.desc')}
               </p>
               <div className="grid grid-cols-3 gap-4">
-                <StatCard target={8} suffix="+" label="Años experiencia" />
-                <StatCard target={15} suffix="%" label="Mejora sesión" />
-                <StatCard target={9} label="Motores IA" />
+                <StatCard target={8} suffix="+" label={t('about.years')} />
+                <StatCard target={15} suffix="%" label={t('about.retention')} />
+                <StatCard target={9} label={t('about.aiEngines')} />
               </div>
               <div className="flex flex-wrap gap-3">
-                {['Rendimiento', 'Serverless', 'Zero Trust'].map((tag) => (
+                {[t('about.tags.perf'), t('about.tags.serverless'), t('about.tags.zeroTrust')].map((tag) => (
                   <span key={tag} className="px-3 py-1.5 rounded-full bg-card border border-subtle text-xs font-medium text-muted">
                     {tag}
                   </span>
@@ -327,7 +344,7 @@ export default function App() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Enlaces profesionales</h3>
+              <h3 className="text-lg font-medium">{t('about.linksTitle')}</h3>
               <div className="flex flex-wrap gap-3">
                 {[
                   { href: 'https://linkedin.com/in/robrivmx', Icon: Icon.Linkedin, label: 'LinkedIn' },
@@ -348,10 +365,10 @@ export default function App() {
               </div>
               <div className="mt-4 p-4 rounded-card bg-card border border-subtle">
                 <p className="text-sm font-normal text-muted">
-                  Compensación:{' '}
-                  <span className="text-text font-medium">MXN 35,000/mes</span>
-                  {' '}o{' '}
-                  <span className="text-text font-medium">MXN 800/hora</span>
+                  {t('about.compensation')}:{' '}
+                  <span className="text-text font-medium">{t('about.month')}</span>
+                  {' '}{t('about.or')}{' '}
+                  <span className="text-text font-medium">{t('about.hour')}</span>
                 </p>
               </div>
             </div>
@@ -362,7 +379,7 @@ export default function App() {
         < section id="proyectos" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-24" >
           <div className="flex items-center gap-3 mb-8">
             <Icon.Layers className="w-6 h-6 text-blue-400" />
-            <h2 className="text-2xl font-medium">Proyectos destacados</h2>
+            <h2 className="text-2xl font-medium">{t('projects.title')}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {PROJECTS.map((p, idx) => (
@@ -383,9 +400,9 @@ export default function App() {
                 <h3 className="text-lg font-medium mb-2">{p.title}</h3>
                 <p className="text-sm font-normal text-muted mb-4 flex-1">{p.desc}</p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {p.stack.slice(0, 4).map((t) => (
-                    <span key={t} className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-white/5 text-muted border border-subtle">
-                      {t}
+                  {p.stack.slice(0, 4).map((tg) => (
+                    <span key={tg} className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-white/5 text-muted border border-subtle">
+                      {tg}
                     </span>
                   ))}
                   {p.stack.length > 4 && (
@@ -393,7 +410,7 @@ export default function App() {
                   )}
                 </div>
                 <div className="text-xs font-medium text-blue-400 group-hover:text-blue-300 flex items-center gap-1 transition-colors mt-auto">
-                  Ver detalle <Icon.ArrowUpRight />
+                  {t('projects.viewDetail')} <Icon.ArrowUpRight />
                 </div>
               </GlowCard>
             ))}
@@ -402,40 +419,38 @@ export default function App() {
 
         {/* Contacto */}
         < section id="contacto" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20" >
-          {/* Call To Action Ejecutivo */}
           <div className="mb-8 relative p-8 sm:p-12 rounded-card-lg bg-surface border border-blue-500/20 overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
-            {/* Background Glows */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full group-hover:bg-blue-500/20 transition-colors duration-700"></div>
             
             <div className="relative z-10 w-full">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
                 <Icon.Zap className="w-3.5 h-3.5" />
-                <span>Disponible para nuevos desafíos</span>
+                <span>{t('contact.availability')}</span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-text mb-6 tracking-tight">
-                ¿Construimos algo <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">excepcional?</span>
+                {t('contact.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">{t('contact.title2')}</span>
               </h2>
               <p className="text-base sm:text-lg text-muted font-normal mb-8 leading-relaxed max-w-2xl">
-                Ya sea que necesites resolver cuellos de botella con Inteligencia Artificial, diseñar arquitecturas robustas desde cero o liderar un equipo técnico hacia el siguiente nivel. <strong className="text-text">Cuéntame tu visión</strong> y diseñemos la arquitectura para hacerla realidad.
+                {t('contact.desc')} <strong className="text-text">{t('contact.descBold')}</strong> {t('contact.desc2')}
               </p>
               
               <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap items-start sm:items-center gap-4 sm:gap-6 lg:gap-8 text-sm font-medium text-muted">
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Icon.Check className="w-4 h-4 text-green-400" />
-                  <span>Startups & Enterprise</span>
+                  <span>{t('contact.bullets.startups')}</span>
                 </div>
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Icon.Check className="w-4 h-4 text-green-400" />
-                  <span>Infraestructura Serverless</span>
+                  <span>{t('contact.bullets.serverless')}</span>
                 </div>
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Icon.Check className="w-4 h-4 text-green-400" />
-                  <span>Seguridad Zero Trust</span>
+                  <span>{t('contact.bullets.zeroTrust')}</span>
                 </div>
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Icon.Check className="w-4 h-4 text-green-400" />
-                  <span>Integración de IA (LLMs)</span>
+                  <span>{t('contact.bullets.ai')}</span>
                 </div>
               </div>
             </div>
@@ -444,8 +459,8 @@ export default function App() {
             {[
               {
                 id: 'email',
-                title: 'Email Directo',
-                desc: 'Hablemos por correo',
+                title: t('contact.cards.email.title'),
+                desc: t('contact.cards.email.desc'),
                 href: '#',
                 onClick: (e) => {
                   e.preventDefault();
@@ -455,22 +470,22 @@ export default function App() {
               },
               {
                 id: 'linkedin',
-                title: 'LinkedIn',
-                desc: 'Red profesional',
+                title: t('contact.cards.linkedin.title'),
+                desc: t('contact.cards.linkedin.desc'),
                 href: 'https://linkedin.com/in/robrivmx',
                 Icon: Icon.Linkedin,
               },
               {
                 id: 'github',
-                title: 'GitHub',
-                desc: 'Código y contribuciones',
+                title: t('contact.cards.github.title'),
+                desc: t('contact.cards.github.desc'),
                 href: 'https://github.com/RobRivMx',
                 Icon: Icon.Github,
               },
               {
                 id: 'whatsapp',
-                title: 'Agendar Llamada',
-                desc: 'WhatsApp Directo',
+                title: t('contact.cards.whatsapp.title'),
+                desc: t('contact.cards.whatsapp.desc'),
                 href: 'https://wa.me/5215610480746?text=Hola%20Roberto%2C%20me%20interesa%20tu%20perfil%20como%20Lead%20Full%20Stack%20Architect.',
                 Icon: Icon.MessageCircle,
               },
@@ -502,20 +517,19 @@ export default function App() {
               <span className="text-lg font-medium tracking-tight">Roberto <span className="font-normal text-blue-400">Rivera</span></span>
             </div>
             <p className="text-xs font-normal text-muted">
-              © 2026 Roberto Rivera — Diseñado con precisión.
+              {t('footer.copyright')}
             </p>
           </div>
         </footer>
       </main >
 
       {/* ── Modal proyecto ────────────────────────── */}
-      {/* ── Modal de Proyecto Centralizado ── */}
       <ProjectModal 
         project={selectedProject} 
         onClose={() => setSelectedProject(null)} 
         onOpenDemo={(demoId) => {
-          setSelectedProject(null); // Cerramos el modal
-          setActiveDemo(demoId);    // Abrimos la demo
+          setSelectedProject(null);
+          setActiveDemo(demoId);
         }}
       />
 
@@ -544,8 +558,8 @@ export default function App() {
                   <Icon.Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-medium text-text">Enviar Correo</h3>
-                  <p className="text-xs text-muted">Selecciona tu cliente preferido</p>
+                  <h3 className="text-base font-medium text-text">{t('emailModal.title')}</h3>
+                  <p className="text-xs text-muted">{t('emailModal.subtitle')}</p>
                 </div>
               </div>
               <button 
@@ -564,7 +578,7 @@ export default function App() {
                   onClick={() => setEmailModalOpen(false)}
                   className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-red-500/40 hover:bg-red-500/5 group transition-all"
                 >
-                  <span className="text-sm font-medium text-text group-hover:text-red-400 transition-colors">Abrir en Gmail</span>
+                  <span className="text-sm font-medium text-text group-hover:text-red-400 transition-colors">{t('emailModal.gmail')}</span>
                   <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-red-400 transition-colors" />
                 </a>
                 <a 
@@ -573,7 +587,7 @@ export default function App() {
                   onClick={() => setEmailModalOpen(false)}
                   className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-blue-500/40 hover:bg-blue-500/5 group transition-all"
                 >
-                  <span className="text-sm font-medium text-text group-hover:text-blue-400 transition-colors">Abrir en Outlook</span>
+                  <span className="text-sm font-medium text-text group-hover:text-blue-400 transition-colors">{t('emailModal.outlook')}</span>
                   <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-blue-400 transition-colors" />
                 </a>
                 <a 
@@ -582,14 +596,14 @@ export default function App() {
                   onClick={() => setEmailModalOpen(false)}
                   className="flex items-center justify-between p-4 rounded-xl border border-subtle hover:border-purple-500/40 hover:bg-purple-500/5 group transition-all"
                 >
-                  <span className="text-sm font-medium text-text group-hover:text-purple-400 transition-colors">Abrir en Yahoo</span>
+                  <span className="text-sm font-medium text-text group-hover:text-purple-400 transition-colors">{t('emailModal.yahoo')}</span>
                   <Icon.ArrowUpRight className="w-4 h-4 text-muted group-hover:text-purple-400 transition-colors" />
                 </a>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="h-px bg-subtle flex-1"></div>
-                <span className="text-xs font-medium text-muted uppercase tracking-wider">O copia la dirección</span>
+                <span className="text-xs font-medium text-muted uppercase tracking-wider">{t('emailModal.orCopy')}</span>
                 <div className="h-px bg-subtle flex-1"></div>
               </div>
 
@@ -608,10 +622,10 @@ export default function App() {
                   {emailCopied ? (
                     <>
                       <Icon.Check className="w-4 h-4" />
-                      Copiado
+                      {t('emailModal.copied')}
                     </>
                   ) : (
-                    'Copiar'
+                    t('emailModal.copy')
                   )}
                 </button>
               </div>
