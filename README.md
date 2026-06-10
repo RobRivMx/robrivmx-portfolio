@@ -1,6 +1,6 @@
 # 🚀 Roberto Rivera | Lead Full Stack Architect
 
-## 🚀 Live Demo: [robrivmx-portfolio](https://robrivmx.github.io/robrivmx-portfolio/)
+## 🔗 Interactive Experience: [robrivmx-portfolio](https://robrivmx.github.io/robrivmx-portfolio/)
 
 Welcome to my interactive portfolio. I am a Lead Full Stack Architect specializing in **Edge-to-Serverless ecosystems, AI Integration, and High-Performance Progressive Web Apps (PWAs)**. 
 
