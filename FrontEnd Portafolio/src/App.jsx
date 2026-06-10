@@ -347,29 +347,21 @@ export default function App() {
               <h3 className="text-lg font-medium">{t('about.linksTitle')}</h3>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { href: 'https://linkedin.com/in/robrivmx', Icon: Icon.Linkedin, label: 'LinkedIn' },
-                  { href: 'https://github.com/RobRivMx', Icon: Icon.Github, label: 'GitHub' },
-                  { href: 'https://torre.ai/robertorivera0', Icon: Icon.Briefcase, label: 'Torre' },
-                  { href: '#', Icon: Icon.Briefcase, label: 'Workana' },
-                ].map(({ href, Icon: Ic, label }) => (
+                  { href: 'https://linkedin.com/in/robrivmx', Icon: Icon.Linkedin, label: 'LinkedIn', hoverColor: 'hover:text-[#0A66C2] hover:border-[#0A66C2]/50 hover:bg-[#0A66C2]/5' },
+                  { href: 'https://github.com/RobRivMx', Icon: Icon.Github, label: 'GitHub', hoverColor: 'hover:text-white hover:border-white/50 hover:bg-white/5' },
+                  { href: 'https://torre.ai/robertorivera0', Icon: Icon.Briefcase, label: 'Torre', hoverColor: 'hover:text-[#CDDC39] hover:border-[#CDDC39]/50 hover:bg-[#CDDC39]/5' },
+                  { href: '#', Icon: Icon.Briefcase, label: 'Workana', hoverColor: 'hover:text-[#00A0D6] hover:border-[#00A0D6]/50 hover:bg-[#00A0D6]/5' },
+                ].map(({ href, Icon: Ic, label, hoverColor }) => (
                   <a
                     key={label}
                     href={href}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 rounded-card bg-card border border-subtle text-sm font-normal text-muted hover:text-text hover:border-blue-500/40 transition-all"
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-card bg-surface border border-subtle text-sm font-medium text-muted transition-all duration-300 shadow-sm ${hoverColor}`}
                   >
-                    <Ic className="w-4 h-4" /> {label}
+                    <Ic className="w-4.5 h-4.5" /> {label}
                   </a>
                 ))}
-              </div>
-              <div className="mt-4 p-4 rounded-card bg-card border border-subtle">
-                <p className="text-sm font-normal text-muted">
-                  {t('about.compensation')}:{' '}
-                  <span className="text-text font-medium">{t('about.month')}</span>
-                  {' '}{t('about.or')}{' '}
-                  <span className="text-text font-medium">{t('about.hour')}</span>
-                </p>
               </div>
             </div>
           </div >
@@ -467,6 +459,8 @@ export default function App() {
                   setEmailModalOpen(true);
                 },
                 Icon: Icon.Mail,
+                brandClass: 'hover:border-red-500/50 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)] group-hover:text-red-400',
+                iconClass: 'group-hover:bg-red-500 group-hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]'
               },
               {
                 id: 'linkedin',
@@ -474,6 +468,8 @@ export default function App() {
                 desc: t('contact.cards.linkedin.desc'),
                 href: 'https://linkedin.com/in/robrivmx',
                 Icon: Icon.Linkedin,
+                brandClass: 'hover:border-[#0A66C2]/50 hover:shadow-[0_8px_30px_rgba(10,102,194,0.15)] group-hover:text-[#0A66C2]',
+                iconClass: 'group-hover:bg-[#0A66C2] group-hover:shadow-[0_0_25px_rgba(10,102,194,0.6)]'
               },
               {
                 id: 'github',
@@ -481,6 +477,8 @@ export default function App() {
                 desc: t('contact.cards.github.desc'),
                 href: 'https://github.com/RobRivMx',
                 Icon: Icon.Github,
+                brandClass: 'hover:border-gray-300/50 hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] group-hover:text-white',
+                iconClass: 'group-hover:bg-white group-hover:text-black group-hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]'
               },
               {
                 id: 'whatsapp',
@@ -488,6 +486,8 @@ export default function App() {
                 desc: t('contact.cards.whatsapp.desc'),
                 href: 'https://wa.me/5215610480746?text=Hola%20Roberto%2C%20me%20interesa%20tu%20perfil%20como%20Lead%20Full%20Stack%20Architect.',
                 Icon: Icon.MessageCircle,
+                brandClass: 'hover:border-[#25D366]/50 hover:shadow-[0_8px_30px_rgba(37,211,102,0.15)] group-hover:text-[#25D366]',
+                iconClass: 'group-hover:bg-[#25D366] group-hover:shadow-[0_0_25px_rgba(37,211,102,0.6)]'
               },
             ].map((card, idx) => (
               <a
@@ -496,14 +496,14 @@ export default function App() {
                 onClick={card.onClick}
                 target={card.onClick ? undefined : "_blank"}
                 rel={card.onClick ? undefined : "noreferrer"}
-                className="flex items-center gap-4 p-6 rounded-card bg-surface border border-blue-500/20 hover:border-blue-500/50 hover:bg-card hover:-translate-y-1 transition-all group shadow-[0_4px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)]"
+                className={`flex items-center gap-4 p-6 rounded-card bg-surface border border-subtle hover:bg-card hover:-translate-y-1 transition-all duration-300 group shadow-sm ${card.brandClass}`}
               >
-                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-[0_0_15px_rgba(59,130,246,0.2)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.6)]">
+                <div className={`w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-muted group-hover:text-white transition-all duration-300 ${card.iconClass}`}>
                   <card.Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-medium text-text group-hover:text-blue-400 transition-colors">{card.title}</h3>
-                  <p className="text-sm font-normal text-muted">{card.desc}</p>
+                  <h3 className={`text-base font-medium text-text transition-colors duration-300 ${card.brandClass.split(' ').find(c => c.startsWith('group-hover:text-'))}`}>{card.title}</h3>
+                  <p className="text-sm font-normal text-muted group-hover:text-muted/80 transition-colors">{card.desc}</p>
                 </div>
               </a>
             ))}
